@@ -2,7 +2,7 @@ package polimorfismo;
 
 public class VehiculoFurgoneta extends Vehiculo {
 	int carga;
-	
+
 	public VehiculoFurgoneta(String matricula, String marca, String modelo, int carga) {
 		super(matricula, marca, modelo);
 		this.carga = carga;
@@ -16,12 +16,9 @@ public class VehiculoFurgoneta extends Vehiculo {
 		this.carga = carga;
 	}
 
-	
 	@Override
 	public String mostrarDatos() {
-		return ("Modelo: "+matricula+"\n"
-				+ "Marca: "+marca+"\n"
-				+ "Modelo: "+modelo+"\n"
-				+ "Carga: "+carga);
+		return ("Modelo: " + matricula + "\n" + "Marca: " + marca + "\n" + "Modelo: " + modelo + "\n" + "Carga: "
+				+ carga);
 	}
 }

@@ -15,13 +15,11 @@ public class VehiculoTurismo extends Vehiculo {
 	public void setNumeroPuertas(int numeroPuertas) {
 		this.numeroPuertas = numeroPuertas;
 	}
-	
+
 	@Override
 	public String mostrarDatos() {
-		return ("Modelo: "+matricula+"\n"
-				+ "Marca: "+marca+"\n"
-				+ "Modelo: "+modelo+"\n"
-				+ "Numero de puertas: "+numeroPuertas);
+		return ("Modelo: " + matricula + "\n" + "Marca: " + marca + "\n" + "Modelo: " + modelo + "\n"
+				+ "Numero de puertas: " + numeroPuertas);
 	}
-	
+
 }

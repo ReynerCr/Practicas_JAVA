@@ -1,7 +1,7 @@
 package abstractos;
 
 public abstract class SerVivo {
-	
-	public abstract void alimentarse();	
+
+	public abstract void alimentarse();
 
 }
