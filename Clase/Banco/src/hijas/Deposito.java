@@ -4,8 +4,8 @@ import padres.Transaccion;
 
 public class Deposito extends Transaccion {
 	
-	public Deposito(int tipo, double monto) {
-		super(tipo, monto);
+	public Deposito(double monto) {
+		super(monto);
 	}
 	
 	public double getMonto() {
@@ -15,7 +15,6 @@ public class Deposito extends Transaccion {
 	public void mostrar() {
 		System.out.println("Tipo de transaccion: deposito.");
 		super.mostrar();
-		System.out.println("Estado: "+(super.getTipo()==1? "correcta.":"fallida."));
 	}
 
 }

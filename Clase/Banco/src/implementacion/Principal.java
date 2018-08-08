@@ -3,7 +3,7 @@ package implementacion;
 import java.util.Scanner;
 import padres.Banco;
 
-public class Main {
+public class Principal {
 	
 	public Scanner entrada = new Scanner(System.in);
 

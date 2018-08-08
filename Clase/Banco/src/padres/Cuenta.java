@@ -22,7 +22,6 @@ public abstract class Cuenta {
 		this.saldo = saldo;
 	}
 	
-
 	public String getCliente() {
 		return cliente;
 	}
@@ -34,36 +33,24 @@ public abstract class Cuenta {
 	public double getSaldo() {
 		return saldo;
 	}
-
-	public void setCliente(String cliente) {
-		this.cliente = cliente;
-	}
-
-	public void setCuenta(String cuenta) {
-		this.cuenta = cuenta;
-	}
-
+	
 	public void setSaldo(double saldo) {
 		this.saldo = saldo;
 	}
 	
 	public Transaccion getUnaTransaccion(int i) {
 		return this.transacciones[i];
-	}
+	}//transacciones privadas, si o si necesito esto
 	
 	public Transaccion[] getTransacciones() {
 		return this.transacciones;
-	}
-	
-	public void setUnaTransaccion(int i, Transaccion t) {
-		Transaccion transaccionesaux [] = new Transaccion[transacciones.length+1];
-		System.arraycopy(transacciones, 0, transaccionesaux, 0, transacciones.length);
-		transacciones = transaccionesaux;
-		
-		transacciones[i] = t;
-	}
+	}//transacciones privadas, si o si necesito esto
 	
 	public abstract void addTransaccion(Transaccion t);
+	
+	public void setTransacciones(Transaccion t[]) {
+		this.transacciones = t;
+	}//transacciones privadas, si o si necesito esto
 	
 	public void mostrarEstadoCuenta() {
 		System.out.println("Cliente: "+cliente);
