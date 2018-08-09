@@ -186,49 +186,54 @@ public class Banco {
 				System.out.println("Su saldo actual es de: "+cuentas[i].getSaldo());
 				switch (aux) {
 					case 1: //Deposito
-						System.out.print("Ingrese la cantidad que desee depositar: "); 
-						
-						try {
-							auxf = entrada.nextFloat();
+						do {
+							System.out.print("Ingrese la cantidad que desee depositar: "); 
+							try {
+								auxf = entrada.nextFloat();
+								
+								if (auxf<0) {
+									auxf *= -1;
+									System.out.println("La cantidad que se va a depositar no puede ser negativa, lo corregiremos por usted.");
+									pausa();
+								}//deposito negativo
+								
+							} catch (InputMismatchException e) {
+								auxf = 0;
+								System.out.println("Lo sentimos, hubo un problema al leer los datos, reingrese luego de la pausa.");
+								pausa();
+								limpiar();
+							}//catch mismatch
 							
-							if (auxf<0) {
-								auxf *= -1;
-								System.out.println("La cantidad que se va a depositar no puede ser negativa, lo corregiremos por usted.");
-							}//deposito negativo
-							
-						} catch (InputMismatchException e) {
-							System.out.println("Lo sentimos, ha ocurido un error y regresara al menu.");
-							pausa();
-							break;
-						}//catch mismatch
+						} while (auxf==0);
 						
 						cuentas[i].setSaldo(cuentas[i].getSaldo()+auxf);
+						limpiar();
 						
 						Deposito deposito = new Deposito(auxf);
 						cuentas[i].addTransaccion(deposito);
 						System.out.println("\nHecho. Su saldo actual es de: "+cuentas[i].getSaldo());
 						break;
 					case 2: //Retiro o cobro de cheque
-						System.out.print("Ingrese la cantidad que vaya a "+(cuentas[i] instanceof CuentaCorriente? "cobrar: ":"retirar: ")); 
-						
 						do {
+							System.out.print("Ingrese la cantidad que vaya a "+(cuentas[i] instanceof CuentaCorriente? "cobrar: ":"retirar: ")); 
 							try {
 								auxf = entrada.nextFloat();
 								
 								if (auxf<0) {
 									auxf *= -1;
 									System.out.println("La cantidad que se va a "+(cuentas[i] instanceof CuentaCorriente? "cobrar":"retirar")+" no puede ser negativa, lo corregiremos por usted.");
+									pausa();
 								}//retiro o cobro de cheque negativo
 								
 							} catch (InputMismatchException e) {
 								auxf = 0;
 								System.out.println("Lo sentimos, hubo un problema al leer los datos, reingrese luego de la pausa.");
 								pausa();
-								break;
+								limpiar();
 							}//catch mismatch
-							limpiar();
-						} while (aux != 0);  //mejor asi, no
-						
+							
+							limpiar();	
+						} while(auxf==0);
 						
 						if (auxf<=cuentas[i].getSaldo()) {
 							cuentas[i].setSaldo(cuentas[i].getSaldo()-auxf);

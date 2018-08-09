@@ -11,9 +11,9 @@ public class Implementacion {
 	public static Scanner entrada = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException {
-		final int tamaño = 5;
+		final int tamanno = 5;
 		int menu, iterador = 0, aux=0;
-		Producto productos[] = new Producto[tamaño];
+		Producto productos[] = new Producto[tamanno];
 		do {
 			System.out.println("Programa de inventario de lacteos y electronicos.");
 			System.out.println("1. Cargar un lacteo.");
@@ -31,7 +31,7 @@ public class Implementacion {
 			
 			switch (menu) {
 				case 1:
-					if (iterador<tamaño) {
+					if (iterador<tamanno) {
 						productos[iterador] = new Lacteos();
 						productos[iterador].cargarDatos();
 						codigoRepetido(productos, iterador);
@@ -42,7 +42,7 @@ public class Implementacion {
 					break;
 					
 				case 2:
-					if (iterador<tamaño) {
+					if (iterador<tamanno) {
 						productos[iterador] = new Electronicos();
 						productos[iterador].cargarDatos();
 						codigoRepetido(productos, iterador);
