@@ -52,6 +52,10 @@ public class Viveres extends Producto {
 		} while (unidades == 0);
 	}//cargarDatos
 
+	public void mostrarDatos() {
+		super.mostrarDatos();
+		System.out.println("Marca= " + marca + "\n");
+	}//mostrarDatos
 	
 	//venta +12%
 

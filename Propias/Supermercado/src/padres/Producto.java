@@ -5,10 +5,10 @@ import implementacion.Utilidades;
 
 public abstract class Producto {
 
-	private String codigo; 
+	private String codigo;
 	private String descripcion;
-	private int cantidadEnExistencia; 
-	private float costo; 
+	private int cantidadEnExistencia;
+	private float costo;
 	private float venta;
 	
 	public Producto(String codigo, String descripcion, int cantidadEnExistencia, float costo, float venta) {
@@ -65,8 +65,23 @@ public abstract class Producto {
 				System.out.print("Codigo: "); codigo = Utilidades.entrada.next();
 				System.out.print("Descripcion: "); descripcion = Utilidades.entrada.next();
 				System.out.print("Cantidad en existencia: "); cantidadEnExistencia = Utilidades.entrada.nextInt();
+				while(cantidadEnExistencia <= 0) {
+					System.out.println("No puede ser menor o igual a cero, reingrese: ");
+					cantidadEnExistencia = Utilidades.entrada.nextInt();
+				}
+				
 				System.out.print("Costo: "); costo = Utilidades.entrada.nextFloat();
-			} catch (InputMismatchException e) {
+				while(costo <= 0) {
+					System.out.println("\tNo puede ser menor o igual a cero, reingrese: ");
+					costo = Utilidades.entrada.nextInt();
+				}
+				
+				System.out.println("Venta: "); venta = Utilidades.entrada.nextFloat();
+				while(venta <= 0) {
+					System.out.println("\tNo puede ser menor o igual a cero, reingrese: ");
+					venta = Utilidades.entrada.nextInt();
+				}
+ 			} catch (InputMismatchException e) {
 				codigo = "";
 				descripcion = ""; 
 				cantidadEnExistencia = 0;   
@@ -74,11 +89,23 @@ public abstract class Producto {
 				venta = 0.0f;
 				System.out.println("Error al leer alguno de los datos, reingrese luego de la pausa.");
 				Utilidades.pausa();
-				Utilidades.limpiar();
 			}//catch
 		} while (codigo.compareTo("")!=0);
 		
 	}//cargarDato
-	
+
+	public void mostrarDatos() {
+		System.out.println("Producto\n"
+							+ "Codigo=" + codigo + "\n"
+							+ "Descripcion=" + descripcion + "\n"
+							+ "Cantidad en existencia=" + cantidadEnExistencia + "\n"
+							+ "Costo=" + costo + "\n"
+							+ "Venta=" + venta + "\n"); 
+	}//mostrarDatos
+
+	@Override
+	public String toString() {
+		return (codigo + descripcion + cantidadEnExistencia + costo + venta);
+	}
 
 }

@@ -46,5 +46,4 @@ public class Carnes extends Producto {
 			Utilidades.limpiar();
 		} while (kilos == 0);
 	}//cargarDatos
-	
 }

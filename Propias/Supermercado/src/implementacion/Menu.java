@@ -1,12 +1,12 @@
 package implementacion;
 
 public interface Menu {
-	void añadirProducto();
-	void modificarProducto();
+	void annadirProducto();
+	void modificarExistenciaProducto();
 	void facturarVenta();
 	void calcularIngresosBrutos();
 	void calcularEgresos();
-	void reporteMayoresVentas();
+	void reporteExentosMayoresVentas();
 	void reporteBajaExistencia();
 	void salir();
 }

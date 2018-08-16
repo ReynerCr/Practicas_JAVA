@@ -44,8 +44,5 @@ public class LacteosLiquidos extends Lacteos {
 			Utilidades.limpiar();
 		} while (litros == 0);
 	}//cargarDatos
-	
-	
-	
 
 }

@@ -43,8 +43,4 @@ public class LacteosSolidos extends Lacteos {
 		} while (kilos == 0);
 	}//cargarDatos
 	
-	
-	
-	
-
 }

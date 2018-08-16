@@ -53,7 +53,10 @@ public class Enlatados extends Producto {
 		} while (unidades == 0);
 	}//cargarDatos
 	
-	
+	public void mostrarDatos() {
+		super.mostrarDatos();
+		System.out.println("Marca= " + marca + "\n");
+	}//mostrarDatos
 	
 	//venta +12%
 }
