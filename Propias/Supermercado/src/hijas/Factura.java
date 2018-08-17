@@ -1,19 +1,11 @@
 package hijas;
 
 import padres.Producto;
-import hijas.*;
 
 public class Factura {
-	private char nacionalidad;
 	private int cedula;
 	private Producto[] prod = new Producto[30];
 	
-	public char getNacionalidad() {
-		return nacionalidad;
-	}
-	public void setNacionalidad(char nacionalidad) {
-		this.nacionalidad = nacionalidad;
-	}
 	public int getCedula() {
 		return cedula;
 	}

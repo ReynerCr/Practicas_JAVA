@@ -179,16 +179,6 @@ public class Almacen implements Menu {
 	public void facturarVenta() {
 		int i = getPosicionFacturas(), aux;
 		
-		/*3. Facturar Venta.En este caso debe usar un nuevo objeto de tipo factura para guardar
-los datos de la venta, en este objeto debe guardar cada uno de los productos vendidos,
-así como sus cantidades y la cédula del cliente. El programa debe verificar que la
-cantidad vendida, no sea superior a la cantidad en existencia, en caso de ser positivo, el
-producto no podrá venderse. Al final, se debe mostrar el total en bolívares de los
-productos exentos de iva, el total en bolívares de los productos con iva, el total a pagar
-por concepto de iva, y el total general a pagar por el cliente. Si ningún producto cumple
-con la restricción de la cantidad en existencia, la venta debe cancelarse. (Usar un vector
-para guardar las facturas)*/
-		
 		//valido que facturas tiene o no espacios
 		if (i==-1) {
 			System.out.println("Perdone, nos quedamos sin papel para hacer su factura. Vuelva luego.");
@@ -202,7 +192,7 @@ para guardar las facturas)*/
 					System.out.println("1. Annadir productos a la lista.");
 					System.out.println("2. Mirar la lista.");
 					System.out.println("3. Eliminar uno o mas productos de la lista.");
-					System.out.println("4. Ir a caja.");
+					System.out.println("4. Ir a caja y/o salir.");
 					System.out.print("Opcion: "); aux = Utilidades.entrada.nextInt();
 				} catch (InputMismatchException e) {
 					aux = 0;
@@ -216,9 +206,7 @@ para guardar las facturas)*/
 						do {
 							System.out.println("Descripcion\tCantidad en existencia\tPrecio");
 							for (j=0; j<productos.length && productos[j]!=null; j++) {
-								if (productos[i].getCantidadEnExistencia()!=0) {
-									System.out.println((j+1)+"\t"+productos[j].getCantidadEnExistencia()+"\t"+productos[j].getVenta());
-								}
+								System.out.println((j+1)+"\t"+productos[j].getCantidadEnExistencia()+"\t"+productos[j].getVenta());
 							}//mostrar productos
 							System.out.println("Cualquier otra opcion: salir.");
 							System.out.print("Opcion: ");
@@ -251,29 +239,37 @@ para guardar las facturas)*/
 									System.out.print("Que cantidad de productos desea agregar a la lista?");
 									auxi = Utilidades.entrada.nextInt();
 									if (auxi<0 || auxi>productos[j].getCantidadEnExistencia()) {
-										throw new InputMismatchException();
+										throw new InputMismatchException(); //ahorro codigo si la cantidad que se pide es mayor a la existente o si esta mal
 									}
 								} catch(InputMismatchException e) {
-									System.out.println("No existe esa cantidad de ingredientes (es posible que haya ingresado algo mal), volvera al menu anterior.");
+									System.out.println("No se puede agregar esa cantidad de ese producto a la lista, volvera al menu anterior.");
 									auxi=0;
 									Utilidades.pausa();
 									Utilidades.limpiar();
 									continue;
 								}
 								
+								productos[j].setCantidadEnExistencia(productos[j].getCantidadEnExistencia()-auxi);
+								
 								//si no existe el producto en la lista
 								if (facturas[i].getProd(k)==null) {
 									facturas[i].setProd(productos[j], k);
 									facturas[i].getProd(k).setCantidadEnExistencia(auxi);
-									if (facturas[i].getProd(k) instanceof Viveres || facturas[i].getProd(k) instanceof Enlatados) {
-										facturas[i].getProd(k).setVenta((facturas[i].getProd(k).getVenta()*1.12f));
-									}
+									
 								}
+								//si existe el producto se actualiza
 								else {
 									facturas[i].getProd(k).setCantidadEnExistencia(facturas[i].getProd(k).getCantidadEnExistencia()+auxi);
 								}
+								
+								//ahora si arreglo precios para la muestra final
+								if (facturas[i].getProd(k) instanceof Viveres || facturas[i].getProd(k) instanceof Enlatados) {
+									facturas[i].getProd(k).setVenta(((productos[j].getVenta()*0.12f) + (productos[j].getVenta())));
+								}//Cuando son enlatados o viveres se le añade iva del 12%
+								
+								facturas[i].getProd(k).setVenta(facturas[i].getProd(k).getCantidadEnExistencia() * facturas[i].getProd(k).getVenta());
 								Utilidades.limpiar();
-							}//if para validar que j no fue cero (salir)
+							}//if para validar que j no fue menos uno
 						} while (j!=-1);
 						break;
 						
@@ -299,14 +295,25 @@ para guardar las facturas)*/
 									j=-1;
 							}
 							catch (InputMismatchException e) {
+								System.out.println("No existe ese producto en su lista, volvera al menu anterior.");
 								j=-1;
+								Utilidades.pausa();
+								continue;
 							}
+							
+							//devuelvo los productos al estante
+							int k=0;
+							while (k<productos.length && productos[k]!=null && productos[k].getDescripcion().compareTo(facturas[i].getProd(j).getDescripcion())!=0) {
+								k++;
+							}
+							productos[k].setCantidadEnExistencia(productos[k].getCantidadEnExistencia()+facturas[i].getProd(j).getCantidadEnExistencia());
 							
 							if (j!=-1) {
 								do {
 									facturas[i].setProd(facturas[i].getProd(j+1), j);
 									j++;
-								} while (j<(facturas[i].getProd().length-1));
+								} while (j<(facturas[i].getProd().length) && facturas[i].getProd(j+1)!=null);
+								facturas[i].setProd(null, j); //REVISAR ESTO AL CORRERLO, ME HUELE A MAL
 							}//if para cuando es una opcion valida
 							Utilidades.limpiar();
 							
@@ -314,6 +321,57 @@ para guardar las facturas)*/
 						break;
 						
 					case 4: //Caja
+						//validar que al menos haya algo en la lista
+						if (facturas[i].getProd(0)==null) {
+							System.out.println("No comprara nada, vuelva luego.");
+							facturas[i] = null;
+						}
+						else {
+							//aqui deberia pedir nacionalidad, que no es nada dificil, pero ya se queda asi.
+							int cedula;
+							
+							do {
+								try {
+									System.out.print("Ingrese su cedula: "); cedula = Utilidades.entrada.nextInt();
+									if (cedula<=0) {
+										throw new InputMismatchException();
+										
+									}//cedulas en cero y negativas no son validas
+								} catch (InputMismatchException e) {
+									cedula = 0;
+									System.out.println("Ocurrio un error al momento de ingresar su cedula, reingre luego de la pausa.");
+									Utilidades.pausa();
+								}
+								
+								Utilidades.limpiar();
+							} while (cedula == 0);
+							
+							//guardo la cedula en la factura
+							facturas[i].setCedula(cedula);
+							
+							float conIva = 0f, sinIva = 0f, iva = 0f; 
+							for (j=0; j<facturas[i].getProd().length && facturas[i].getProd(j)!=null; j++) {
+								System.out.println((j+1)+"\t"+productos[j].getCantidadEnExistencia()+"\t"+productos[j].getVenta());
+								
+								if (facturas[i].getProd(j) instanceof Enlatados || facturas[i].getProd(j) instanceof Viveres) {
+									conIva += facturas[i].getProd(j).getVenta();
+									iva += (facturas[i].getProd(j).getVenta() / 1.12f);
+								}//para calcular total de suma de productos con iva y suma total de iva
+								else {
+									sinIva += facturas[i].getProd(j).getVenta();
+								}
+								
+							}//muestro la lista y aprovecho para hacer los calculos
+							
+							System.out.println("\nTotal de roductos exentos de iva: "+sinIva+"bs.");
+							System.out.println("Total de productos con iva: "+conIva+"bs.");
+							System.out.println("Total de iva: "+iva+"bs.");
+							System.out.println("Total: "+(sinIva+conIva)+"bs.");
+							System.out.println("\nGracias por comprar en el supermercado La Popular, esperamos que vuelva pronto.");
+							
+							Utilidades.pausa();
+							Utilidades.limpiar();
+						}
 						break;
 						
 					default:
@@ -330,17 +388,71 @@ para guardar las facturas)*/
 
 	@Override
 	public void calcularIngresosBrutos() {
+		float sumatoria = 0f;
 		
+		for (int i=0; i<facturas.length && facturas[i]!=null; i++) {
+			for (int j=0; j<facturas[i].getProd().length && facturas[i].getProd(j)!=null; j++) {
+				sumatoria += facturas[i].getProd(j).getVenta();
+			}//for productos de facturas[i]
+		}//for facturas
+		
+		System.out.println("Total de dinero ingresado a la empresa por venta de productos: "+sumatoria);
+		Utilidades.limpiar();
 	}//calcularIngresosBrutos
 
 	@Override
 	public void calcularEgresos() {
+		float sumatoria = 0;
 		
+		for (int i=0; i<productos.length && productos[i]!=null; i++) {
+			sumatoria += productos[i].getCosto();
+		}
+		
+		System.out.println("Total de dinero egresado por compra de productos: "+sumatoria);
+		Utilidades.limpiar();
 	}//calcularEgresos
 
 	@Override
 	public void reporteExentosMayoresVentas() {
+		int i=0, j=0;
+		//Crear vector de productos con 30 espacios (productos.length) y llenarlo con los productos que vaya consiguiendo sin iva (igualo) y luego si reviso todas los precios de esos productos
+		//que guarde en el vector para saber
 		
+		while (i<productos.length && productos[i]!=null) { 
+			if (productos[i] instanceof Carnes || productos[i] instanceof LacteosSolidos || productos[i] instanceof LacteosLiquidos)
+				j++;
+			
+			i++;
+		}//while
+		
+		Producto mayoresVentas[] = new Producto[j];
+		j=0;
+		
+		while (i<productos.length && productos[i]!=null) { 
+			if (productos[i] instanceof Carnes || productos[i] instanceof LacteosSolidos || productos[i] instanceof LacteosLiquidos) {
+				mayoresVentas[j] = productos[i];
+				j++;
+			}
+				
+			i++;
+		}//while
+			
+		for (i=0; i<facturas.length && facturas[i]!=null; i++) {
+			for (j=0; j<facturas[i].getProd().length && facturas[i].getProd(j)!=null; j++) {
+				
+				//AQUI TENGO QUE HACER OTRO FOR PARA COMPARAR DESCRPCIONES DE MAYORESVENTAS CON LAS FACTURAS, SI SON IGUALES HAGO SUMATORIA
+				//Y ASI PARA TENER EN MAYORES VENTAS LA VENTA TOTAL DE CADA PRODUCTO, LUEGO SOLO TENGO QUE ORDENARLOS DE MAYOR A MENOR Y MOSTRAR LOS 10
+				//PRIMEROS.
+				
+				/*if (facturas[i].getProd(j) instanceof Carnes || facturas[i].getProd(j) instanceof LacteosLiquidos || facturas[i].getProd(j) instanceof LacteosSolidos) {
+				
+				}//si productos son carnes o lacteos no se les aplica el iva y por tanto me sirven para lo que necesito
+				*/
+			}//for productos de facturas[i]
+		}//for facturas 
+		
+		
+		Utilidades.limpiar();
 	}//reporteMayoresVentas
 	
 	@Override
@@ -348,7 +460,7 @@ para guardar las facturas)*/
 		for (int i=0; i<productos.length && productos[i]!=null; i++) {
 			if (productos[i].getCantidadEnExistencia()<10) {
 				System.out.println(productos[i].toString());
-			}//baja existencia (menor a 10)
+			}//si baja existencia de producto (menor a 10)
 		}//for
 	}//reporteBajaExistencia
 	
