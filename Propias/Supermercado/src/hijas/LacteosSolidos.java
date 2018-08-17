@@ -1,46 +1,12 @@
 package hijas;
 
-import java.util.InputMismatchException;
-
-import implementacion.Utilidades;
-
 public class LacteosSolidos extends Lacteos {
-	private int kilos;
-
 	public LacteosSolidos() {
 		super();
-		kilos = 0;
 	}
 
-	public LacteosSolidos(String codigo, String descripcion, int cantidadEnExistencia, float costo, float venta, int kilos) {
+	public LacteosSolidos(String codigo, String descripcion, int cantidadEnExistencia, float costo, float venta) {
 		super(codigo, descripcion, cantidadEnExistencia, costo, venta);
-		this.kilos = kilos;
 	}
-
-	public int getKilos() {
-		return kilos;
-	}
-
-	public void setKilos(int kilos) {
-		this.kilos = kilos;
-	}
-	
-	public void cargarDatos() {
-		do {
-			try {
-				System.out.println("Kilos: ");
-				kilos = Utilidades.entrada.nextInt();
-				if (kilos<=0) {
-					throw new InputMismatchException(); //no es mismatch, lo se, no quiero repetir codigo
-				}
-			} catch (InputMismatchException e) {
-				System.out.println("Hubo un error al leer los datos o ingreso algo mal, reingrese despues de la pausa.");
-				kilos = 0;
-				Utilidades.pausa();
-			}//catch
-			
-			Utilidades.limpiar();
-		} while (kilos == 0);
-	}//cargarDatos
 	
 }

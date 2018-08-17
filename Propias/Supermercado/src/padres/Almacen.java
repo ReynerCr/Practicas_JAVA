@@ -1,6 +1,8 @@
 package padres;
 
 import java.util.InputMismatchException;
+
+import implementacion.Factura;
 import implementacion.Menu;
 import hijas.*;
 import implementacion.Utilidades;
@@ -431,26 +433,48 @@ public class Almacen implements Menu {
 		while (i<productos.length && productos[i]!=null) { 
 			if (productos[i] instanceof Carnes || productos[i] instanceof LacteosSolidos || productos[i] instanceof LacteosLiquidos) {
 				mayoresVentas[j] = productos[i];
+				mayoresVentas[j].setVenta(0f);  //tengo que hacer cero las ventas para que la sumatoria este correcta
 				j++;
 			}
 				
 			i++;
-		}//while
+		}//while para copiar productos en mayoresVentas
 			
+		//sumo las ventas de productos de facturas en mayoresVentas
 		for (i=0; i<facturas.length && facturas[i]!=null; i++) {
 			for (j=0; j<facturas[i].getProd().length && facturas[i].getProd(j)!=null; j++) {
+				int k = 0;
 				
-				//AQUI TENGO QUE HACER OTRO FOR PARA COMPARAR DESCRPCIONES DE MAYORESVENTAS CON LAS FACTURAS, SI SON IGUALES HAGO SUMATORIA
-				//Y ASI PARA TENER EN MAYORES VENTAS LA VENTA TOTAL DE CADA PRODUCTO, LUEGO SOLO TENGO QUE ORDENARLOS DE MAYOR A MENOR Y MOSTRAR LOS 10
-				//PRIMEROS.
-				
-				/*if (facturas[i].getProd(j) instanceof Carnes || facturas[i].getProd(j) instanceof LacteosLiquidos || facturas[i].getProd(j) instanceof LacteosSolidos) {
-				
+				if (facturas[i].getProd(j) instanceof Carnes || facturas[i].getProd(j) instanceof LacteosLiquidos || facturas[i].getProd(j) instanceof LacteosSolidos) {
+					while (k<mayoresVentas.length && mayoresVentas[k].getDescripcion().compareTo(facturas[k].getProd(j).getDescripcion())!=0) {
+						k++;
+					}
+					if (k!=mayoresVentas.length) {
+						mayoresVentas[k].setVenta(mayoresVentas[k].getVenta() + facturas[i].getProd(j).getVenta());
+					}//por si acaso comparo que k no sea invalido
 				}//si productos son carnes o lacteos no se les aplica el iva y por tanto me sirven para lo que necesito
-				*/
+				
 			}//for productos de facturas[i]
 		}//for facturas 
 		
+		//ordeno con burbuja (se puede mejorar creo, pero no caigo ahora mismo)
+		for (i=0; i<mayoresVentas.length-1; i++) {
+			for (j=0; j<mayoresVentas.length; j++) {
+
+				if (mayoresVentas[j].getVenta() < mayoresVentas[j+1].getVenta()) {
+					Producto aux = mayoresVentas[j];
+					mayoresVentas[j] = mayoresVentas[j+1];
+					mayoresVentas[j+1] = aux;
+				}
+				
+			}//for j para chequeo de valores
+		}//for i para repeticiones de algoritmo
+		
+		//ahora si muestro la lista
+		System.out.println("\tTop 10 productos que mas se han vendido.");
+		for (i=0; i<mayoresVentas.length && i<10; i++) {
+			System.out.println((i+1)+". "+mayoresVentas.toString());
+		}
 		
 		Utilidades.limpiar();
 	}//reporteMayoresVentas
