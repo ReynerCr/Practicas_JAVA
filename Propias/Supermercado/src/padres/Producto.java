@@ -76,7 +76,7 @@ public abstract class Producto {
 					costo = Utilidades.entrada.nextInt();
 				}
 				
-				System.out.println("Venta: "); venta = Utilidades.entrada.nextFloat();
+				System.out.print("Venta: "); venta = Utilidades.entrada.nextFloat();
 				while(venta <= 0) {
 					System.out.println("\tNo puede ser menor o igual a cero, reingrese: ");
 					venta = Utilidades.entrada.nextInt();
@@ -90,22 +90,23 @@ public abstract class Producto {
 				System.out.println("Error al leer alguno de los datos, reingrese luego de la pausa.");
 				Utilidades.pausa();
 			}//catch
-		} while (codigo.compareTo("")!=0);
+			Utilidades.limpiar();
+		} while (codigo.compareTo("")==0);
 		
 	}//cargarDato
 
 	public void mostrarDatos() {
-		System.out.println("Producto\n"
+		System.out.println("Producto:\n"
 							+ "Codigo=" + codigo + "\n"
 							+ "Descripcion=" + descripcion + "\n"
 							+ "Cantidad en existencia=" + cantidadEnExistencia + "\n"
 							+ "Costo=" + costo + "\n"
-							+ "Venta=" + venta + "\n"); 
+							+ "Venta=" + venta); 
 	}//mostrarDatos
 
 	@Override
 	public String toString() {
-		return (codigo + descripcion + cantidadEnExistencia + costo + venta);
+		return (codigo + "\t" + descripcion + "\t" + cantidadEnExistencia + "\t" + costo + "\t" + venta);
 	}
 
 }

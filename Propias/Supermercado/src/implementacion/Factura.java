@@ -17,11 +17,6 @@ public class Factura {
 	}
 	public Producto getProd(int i) {
 		return prod[i];
-	}
-	public void setProd(Producto[] prod) {
-		this.prod = prod;
-	}
-	public void setProd(Producto prod, int i) {
-		this.prod[i] = prod;
-	}
-}
+	}	
+	
+}//class Factura
