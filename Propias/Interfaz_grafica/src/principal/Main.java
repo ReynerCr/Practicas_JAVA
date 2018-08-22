@@ -1,4 +1,6 @@
-package ventana;
+package principal;
+
+import terminadas.Ventana2;
 
 public class Main {
 

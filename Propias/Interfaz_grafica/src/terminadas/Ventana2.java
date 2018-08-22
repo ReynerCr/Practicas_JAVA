@@ -1,4 +1,4 @@
-package ventana;
+package terminadas;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
 
 @SuppressWarnings("serial")
 public class Ventana2 extends JFrame {
@@ -32,77 +31,100 @@ public class Ventana2 extends JFrame {
 	
 	
 	public Ventana2 () {
-		setSize(500, 500);
 		setTitle("Eventos");
 		setLocationRelativeTo(null);
+		
 		setMinimumSize(new Dimension(200, 200)); 
+		setPreferredSize(new Dimension(500, 500));
+		setMaximumSize(new Dimension (700, 700));
 		
 		iniciarComponentes();
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-	}
+		pack();
+	}//Ventana2()
+	
+	private void iniciarComponentes() {
+		colocarPanel();
+		colocarCajaTexto();
+		colocarBoton();
+		colocarAreaDeTexto(); //donde se muestran los eventos excepto saludo
+		activarEvento(3); //-1=nada, 0=saludo, 1=raton, 2=teclado, 3=todo (requiere caja, boton y area activos)
+	}//iniciarComponentes
 	
 	private void colocarPanel() {
 		panel = new JPanel();
-		panel.setLayout(new BorderLayout(5, 5));
+		panel.setLayout(new BorderLayout());
 		this.add(panel);
-	}
-	//ARREGLAR ESTE DESASTRE, NO ES RECOMENDADO USAR NULL LAYOUT Y TAMPOCO ME SIRVE .-.
+	}//colocarPanel
+	
 	private void colocarCajaTexto() {
 		cajaTexto = new JTextField(10);
 		cajaTexto.setFont(new Font("Arial", Font.ITALIC, 12));
-		panel.add(cajaTexto);
 		
-		
-		eventosTeclado();
-	}
+		panel.add(cajaTexto, BorderLayout.LINE_START);
+	}//colocarCajaTexto
 	
 	private void colocarEtiqueta() {
 		JLabel pregunta = new JLabel("Ingrese su nombre: ");
-		pregunta.setBounds(10, 10, 300, 40);
 		pregunta.setFont(new Font("Arial", Font.BOLD, 15));
-		panel.add(pregunta);
-	}
+		
+		panel.add(pregunta, BorderLayout.PAGE_START);
+	}//colocarEtiqueta
 	
 	private void colocarBoton() {
-		//boton
 		boton = new JButton();
-		ImageIcon imagen = new ImageIcon("flecha.png");
-		boton.setBounds(360, 100, 80, 40);
-		boton.setIcon(new ImageIcon (imagen.getImage().getScaledInstance(boton.getWidth(), boton.getHeight(), Image.SCALE_FAST)));
 		
-		panel.add(boton);
-	}
+		ImageIcon imagen = new ImageIcon("flecha.png");
+		boton.setIcon(new ImageIcon (imagen.getImage().getScaledInstance(80, 40, Image.SCALE_FAST)));
+		boton.setMnemonic(KeyEvent.VK_ENTER);
+		
+		panel.add(boton, BorderLayout.CENTER);
+	}//colocarBoton
 	
 	private void colocarAreaDeTexto() {
-		areaTexto = new JTextArea(50, 50);
-		JScrollPane scroll = new JScrollPane(areaTexto);
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		//area de texto
+		areaTexto = new JTextArea();
 		
-		panel.add(scroll);
-		//eventoOyenteRaton();
-	}
+		//barra de desplazamiento que no se por que necesito settearle tamaño para que se vea al correr el programa y no al pulsar el boton
+		JScrollPane scroll = new JScrollPane(areaTexto, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setMinimumSize(new Dimension(200, 200)); 
+		scroll.setPreferredSize(new Dimension(200, 200));
+		scroll.setMaximumSize(new Dimension (200, 200));
+		
+		panel.add(scroll, BorderLayout.LINE_END);
+	}//colocarAreaDeTexto
 	
 	private void saludar() {
-		//saludo
 		saludo = new JLabel();
 		saludo.setFont(new Font("Arial", Font.BOLD, 20));
-		saludo.setBounds(10, 110, 200, 120);
 		
-		panel.add(saludo);
-		
-		oyenteEventoAccion();
-	}
+		panel.add(saludo, BorderLayout.PAGE_END);
+	}//saludar
 
-	private void iniciarComponentes() {
-		colocarPanel();
-		colocarCajaTexto();  
-		//colocarEtiqueta();  
-		//colocarBoton();
-		//saludar();  
-		//colocarAreaDeTexto(); 
-	}
+	private void activarEvento(int i) {
+		//EVENTOS QUE SOLO MUESTRO EN EL AREA DE TEXTO
+		if (i==0) {//saludo
+			colocarEtiqueta(); //ingrese su nombre
+			saludar();  //saluda con el nombre
+			oyenteEventoAccion(); 
+		}
+		else if (i==1) {//raton
+			eventoOyenteRaton();
+		}
+		else if (i==2) {//teclado
+			eventosTeclado();
+		}
+		else if (i==3) {
+			colocarEtiqueta();
+			saludar();
+			oyenteEventoAccion(); 
+			
+			eventoOyenteRaton();
+			
+			eventosTeclado();
+		}
+	}//activarEvento
 	
 	private void eventoOyenteRaton() {
 		MouseListener oyenteRaton = new MouseListener() {
@@ -114,12 +136,12 @@ public class Ventana2 extends JFrame {
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				areaTexto.append("MouseEntered\n");
+				//areaTexto.append("MouseEntered\n");
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				areaTexto.append("MouseExited\n");
+				//areaTexto.append("MouseExited\n");
 			}
 
 			@Override
@@ -135,7 +157,7 @@ public class Ventana2 extends JFrame {
 		};
 		
 		boton.addMouseListener(oyenteRaton);
-	}
+	}//eventoOyenteRaton
 
 	private void oyenteEventoAccion() {
 		//Agregar evento para boton
@@ -148,10 +170,9 @@ public class Ventana2 extends JFrame {
 		};
 		
 		boton.addActionListener(oyenteAccion);
-	}
+	}//oyenteEventoAccion
 	
 	private void eventosTeclado() {
-		
 		KeyListener oyenteTeclado = new KeyListener() {
 
 			@Override
@@ -167,17 +188,17 @@ public class Ventana2 extends JFrame {
 			@Override
 			public void keyTyped(KeyEvent ke) {
 				//areaTexto.append("KeyTyped\n");
-				if (ke.getKeyChar() == 'p') {
-					areaTexto.append("Letra p\n");
-				}
-				else if (ke.getKeyChar() == '\n') {
+				if (Character.isLetter(ke.getKeyChar()))
+					areaTexto.append("Letra '" + ke.getKeyChar() + "' \n");
+				
+				if (ke.getKeyChar() == '\n') 
 					areaTexto.append("Enter\n");
-				}
+				
 			}
 			
-		};
+		};//implementacion de keyListener
 		
 		cajaTexto.addKeyListener(oyenteTeclado);
-	}
+	}//eventosTeclado
 	
-}
+}//class Ventana2
