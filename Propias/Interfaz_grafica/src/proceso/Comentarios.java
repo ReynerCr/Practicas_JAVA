@@ -3,9 +3,13 @@ package proceso;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
@@ -23,13 +27,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class Comentarios extends JFrame {
-	private JPanel panel, fondo, cajaDer, cajaComentario;
+	private JPanel panel, fondo, cajaDer, cajaComentario, panelDatos;
 	private JButton enviar;
 	private JLabel etiqueta;
 	private JTextArea textArea;
@@ -37,10 +43,10 @@ public class Comentarios extends JFrame {
 	private JLabel cierre;
 	private JLabel publicacion;
 	private JPanel etiquetica;
+	private JTextField cajaNombre;
 	
 	public Comentarios() {
 		
-		this.setBackground(Color.BLUE);
 		this.setSize(700, 700);
 		titulosVarios(); //un titulo aleatorio de 5
 		this.setMaximumSize(new Dimension(700, 700));
@@ -75,14 +81,15 @@ public class Comentarios extends JFrame {
 	private void iniciarComponentes() {
 		iniciarPaneles();
 		iniciarEtiqueta();
-		iniciarBotones();
 		iniciarTextArea();
+		iniciarTextField();
+		iniciarBotones();
 		cargarPublicaciones();
 	}//iniciarComponente
 	
 	private void iniciarPaneles() {
 		panel = new JPanel(new BorderLayout());
-		panel.setBackground(Color.LIGHT_GRAY);
+		panel.setBackground(Color.BLACK);
 		
 		fondo = new JPanel(new BorderLayout());
 
@@ -94,6 +101,11 @@ public class Comentarios extends JFrame {
 		cajaComentario = new JPanel(new BorderLayout());
 		cajaComentario.setBackground(Color.white);
 		
+		panelDatos = new JPanel();
+		panelDatos.setLayout(new FlowLayout());
+		panelDatos.setOpaque(false);
+		
+		cajaComentario.add(panelDatos, BorderLayout.PAGE_END);
 		fondo.add(cajaComentario, BorderLayout.CENTER);
 		fondo.add(scrollCajaDer, BorderLayout.LINE_END);
 		panel.add(fondo, BorderLayout.CENTER);
@@ -103,10 +115,11 @@ public class Comentarios extends JFrame {
 	
 	private void iniciarEtiqueta() {
 		etiquetica = new JPanel(new BorderLayout());
-		etiquetica.setBackground(Color.LIGHT_GRAY);
+		etiquetica.setBackground(Color.BLACK);
 		
 		etiqueta = new JLabel("CAJA DE COMENTARIOS");
 		etiqueta.setFont(new Font("Arial", Font.BOLD, 30));
+		etiqueta.setForeground(Color.WHITE);
 		
 		ImageIcon imagen = new ImageIcon("fantasma.png");
 		JLabel imagencita = new JLabel(new ImageIcon (imagen.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));
@@ -134,18 +147,30 @@ public class Comentarios extends JFrame {
 
 	private void iniciarTextArea() {
 		textArea = new JTextArea();
-		textArea.setEditable(true);
 		JScrollPane scrollBar = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		cajaComentario.add(scrollBar, BorderLayout.CENTER);
+	}//iniciarTextArea
+	
+	private void iniciarTextField() {
+		JLabel nombre = new JLabel("Nombre: ");
+		nombre.setFont(new Font("Arial", Font.PLAIN, 12));
+		panelDatos.add(nombre);
+		
+		cajaNombre = new JTextField();
+		cajaNombre.setFont(new Font("Arial", Font.ITALIC, 14));
+		cajaNombre.setPreferredSize(new Dimension(160, 27));
+		
+		panelDatos.add(cajaNombre);
+		iniciarEventos(2); //teclado
 	}
 	
 	private void iniciarBotones() {
 		enviar = new JButton("Enviar");
 		enviar.setMnemonic(KeyEvent.VK_ENTER);
 		
-		cajaComentario.add(enviar, BorderLayout.PAGE_END);
-		iniciarEventos(1);
+		panelDatos.add(enviar);
+		iniciarEventos(1); //boton enviar
 	}//iniciarBotones
 	
 	private void cargarPublicaciones() {
@@ -166,9 +191,10 @@ public class Comentarios extends JFrame {
 				pub.setOpaque(true);
 				cajaDer.add(pub);
 				
-				
-				entrada.nextLine();
-				entrada.nextLine();
+				while (entrada.next().compareTo("---------------")!=0) {
+					entrada.nextLine();
+				}//llego hasta la linea delimitadora
+				entrada.nextLine(); //me salto el texto hasta la linea delimitadora
 				
 				cont++;
 			}
@@ -185,11 +211,13 @@ public class Comentarios extends JFrame {
 	}//cargarPublicaciones
 	
 	private void crearArch() throws IOException {
+		String nombre = cajaNombre.getText();
+		
 		FileWriter fw = new FileWriter("comentarios.txt", true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter pw = new PrintWriter(bw);
 		
-		pw.println("nombre-" + Calendar.getInstance().getTime() + "-");
+		pw.println(nombre + "-" + Calendar.getInstance().getTime() + "-");
 		pw.println(textArea.getText());
 		pw.println("---------------");
 		pw.close();
@@ -197,58 +225,62 @@ public class Comentarios extends JFrame {
 	
 	private void iniciarEventos(int i) {
 		switch (i) {
-		 case 1: //raton
-			 MouseListener raton = new MouseListener() {
-
-				@Override
-				public void mouseClicked(MouseEvent arg0) {
-					try {
-						crearArch();
-						String nombre = "nombre";
-						
-						JLabel pub = new JLabel("De: " + nombre + " el " + Calendar.getInstance().getTime());
-						pub.setFont(new Font("Arial", Font.ITALIC, 14));
-						pub.setBackground(Color.LIGHT_GRAY);
-						pub.setOpaque(true);
-						cajaDer.add(pub);
-						
-					} catch (IOException e) {
-						e.printStackTrace();
-						System.out.println("Ocurrio un error extraño.");
-					}
-					
-				}
-
-				@Override
-				public void mouseEntered(MouseEvent arg0) {
-					enviar.setBorderPainted(true);
-				}
-
-				@Override
-				public void mouseExited(MouseEvent arg0) {
-					enviar.setBorderPainted(false);
-				}
-
-				@Override
-				public void mousePressed(MouseEvent arg0) {
-					
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent arg0) {
-					
-				}
-				 
-			 };
-			 enviar.addMouseListener(raton);
+		 case 1:
+			 ActionListener pressBoton = new ActionListener() {
+				 @Override
+				 public void actionPerformed(ActionEvent arg0) {
+					 if (textArea.getText().isEmpty() || (textArea.getText().compareTo("\\s* \\s*")==0)) {
+						 JOptionPane.showMessageDialog(null, "No se puede añadir un comentario vacio.");
+					 }//si area de texto vacia
+					 else if (cajaNombre.getText().isEmpty()) {
+						 JOptionPane.showMessageDialog(null, "Para poder enviar un comentario debe identificarse.");
+					 }//si caja de texto vacia
+					 else {
+					 	try {
+					 		crearArch();
+					 		String nombre = cajaNombre.getText();
+					 		//OCURRE ALGO RARO Y ESTO NO ME LO HACE AAAAAAA
+					 		//DEBO VERIFICAR QUE EL NOMBRE NO PUEDE CONTENER EL CARACTER DELIMITADOR
+					 		//DEBO VERIFICAR QUE EL NOMBRE NO PUEDE CONTENER SALTOS DE LINEA
+					 		//DEBO ARREGLARLO PARA QUE LOS SALTOS DE LINEA INNECESARIOS NO ME LOS CUENTA
+					 		//Y QUE UN COMENTARIO NO PUEDA TENER SOLO SALTOS DE LINEA O ESPACIOS (no funciono lo que hice)
+					 		JLabel noPub = new JLabel("De: " + nombre + " el " + Calendar.getInstance().getTime());
+					 		noPub.setFont(new Font("Arial", Font.ITALIC, 14));
+					 		noPub.setBackground(Color.LIGHT_GRAY);
+					 		cajaDer.add(noPub);
+					 		
+					 	} catch (IOException e) {
+					 		e.printStackTrace();
+					 		System.out.println("Ocurrio un error extraño.");
+					 	}//catch
+					 }//else para cuando esta correcto
+				 }//actionPerformed
+			 };//actionListener 
+			 enviar.addActionListener(pressBoton);
 			 this.revalidate();
 			 this.repaint();
 			 break;
 			 
 		 case 2:
+			 KeyListener teclado = new KeyListener() {
+				@Override
+				public void keyPressed(KeyEvent arg0) {
+				}
+
+				@Override
+				public void keyReleased(KeyEvent arg0) {
+				}
+
+				@Override
+				public void keyTyped(KeyEvent ke) {
+					if (ke.getKeyChar() == KeyEvent.VK_ENTER) {
+						enviar.doClick();
+					}//cuando se presione enter mientras se esta en la caja de texto se guardara
+				}
+			 };
 			 
+			 cajaNombre.addKeyListener(teclado);
 			 break;
-			 
 		 case 3:
 			 
 			 break;
