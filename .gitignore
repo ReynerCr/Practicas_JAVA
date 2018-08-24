@@ -98,6 +98,8 @@ nbdist/
 Thumbs.db
 ehthumbs.db
 ehthumbs_vista.db
+.txt
+.dat
 
 # Dump file
 *.stackdump

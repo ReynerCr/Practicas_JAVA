@@ -6,12 +6,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,10 +46,11 @@ public class Comentarios extends JFrame {
 	
 	public Comentarios() {
 		
-		this.setSize(700, 700);
+		this.setSize(800, 800);
 		titulosVarios(); //un titulo aleatorio de 5
-		this.setMaximumSize(new Dimension(700, 700));
-		this.setMinimumSize(new Dimension(500, 500));
+		this.setMaximumSize(new Dimension(800, 800));
+		this.setMinimumSize(new Dimension(700, 700));
+		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		iniciarComponentes();
@@ -95,9 +95,8 @@ public class Comentarios extends JFrame {
 
 		cajaDer = new JPanel();
 		cajaDer.setLayout(new BoxLayout(cajaDer, BoxLayout.Y_AXIS));
-		cajaDer.setBackground(Color.GRAY);
-		JScrollPane scrollCajaDer = new JScrollPane(cajaDer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		
+		cajaDer.setBackground(Color.LIGHT_GRAY);
+		JScrollPane scrollCajaDer = new JScrollPane(cajaDer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);		
 		cajaComentario = new JPanel(new BorderLayout());
 		cajaComentario.setBackground(Color.white);
 		
@@ -127,19 +126,13 @@ public class Comentarios extends JFrame {
 		etiquetica.add(imagencita, BorderLayout.LINE_START);
 		etiquetica.add(etiqueta, BorderLayout.CENTER);
 		
-		descripcion = new JLabel("Hola, me llamo Reyner y este es mi programa. Sientase libre de escribir en el.");
+		descripcion = new JLabel("Hola, me llamo Reyner y este es mi programa. Siéntase libre de escribir en él.");
 		descripcion.setFont(new Font("Calibri", Font.ITALIC, 16));
 		descripcion.setForeground(Color.BLUE);
 		
 		cierre = new JLabel("Publicado el: "+ Calendar.getInstance().getTime());
 		cierre.setFont(new Font("Calibri", Font.BOLD, 12));
 		
-		publicacion = new JLabel("Publicaciones: ");
-		publicacion.setBackground(Color.LIGHT_GRAY);
-		publicacion.setForeground(Color.ORANGE);
-		publicacion.setFont(new Font("Calibri", Font.BOLD, 20));
-		
-		cajaDer.add(publicacion);
 		fondo.add(cierre, BorderLayout.PAGE_END);
 		fondo.add(descripcion, BorderLayout.PAGE_START);
 		panel.add(etiquetica, BorderLayout.PAGE_START);
@@ -176,20 +169,37 @@ public class Comentarios extends JFrame {
 	private void cargarPublicaciones() {
 		int cont = 0;
 		
+		publicacion = new JLabel("Publicaciones: ");
+		publicacion.setBackground(Color.LIGHT_GRAY);
+		publicacion.setForeground(Color.BLUE);
+		publicacion.setFont(new Font("Calibri", Font.BOLD, 20));
+		
+		cajaDer.add(publicacion);
+		
 		try {
 			Scanner entrada = new Scanner(new File("comentarios.txt"));
 			while (entrada.hasNextLine()) {
 				String nombre, fecha;
 				String linea = entrada.nextLine();
-				StringTokenizer tokenizer = new StringTokenizer(linea, "-");
+				StringTokenizer tokenizer = new StringTokenizer(linea, "#");
 				nombre = tokenizer.nextToken();
 				fecha = tokenizer.nextToken();
 				
-				JLabel pub = new JLabel("De: " + nombre + " el " + fecha);
-				pub.setFont(new Font("Arial", Font.ITALIC, 14));
-				pub.setBackground(Color.LIGHT_GRAY);
-				pub.setOpaque(true);
-				cajaDer.add(pub);
+				JPanel panelPub = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+				panelPub.setOpaque(false);
+				
+				JButton pub = new JButton("De: " + nombre + " el " + fecha);
+				pub.setFont(new Font("Arial", Font.ITALIC, 12));
+				pub.setMargin(new Insets(0,0,0,0));
+				
+				ImageIcon imagen = new ImageIcon("remove.png");
+				JButton eliminarPub = new JButton(new ImageIcon(imagen.getImage().getScaledInstance(20, 17, Image.SCALE_FAST)));
+				eliminarPub.setContentAreaFilled(false);
+				eliminarPub.setMargin(new Insets(0,0,0,0));
+				
+				panelPub.add(pub);
+				panelPub.add(eliminarPub);
+				cajaDer.add(panelPub);
 				
 				while (entrada.next().compareTo("---------------")!=0) {
 					entrada.nextLine();
@@ -200,7 +210,6 @@ public class Comentarios extends JFrame {
 			}
 			entrada.close();
 		} catch(FileNotFoundException e) {
-			System.out.println("No hay publicaciones recientes.");
 		}//try de leerArchivo
 		
 		if(cont == 0) {
@@ -212,12 +221,11 @@ public class Comentarios extends JFrame {
 	
 	private void crearArch() throws IOException {
 		String nombre = cajaNombre.getText();
-		
 		FileWriter fw = new FileWriter("comentarios.txt", true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter pw = new PrintWriter(bw);
 		
-		pw.println(nombre + "-" + Calendar.getInstance().getTime() + "-");
+		pw.println(nombre + "#" + Calendar.getInstance().getTime() + "#");
 		pw.println(textArea.getText());
 		pw.println("---------------");
 		pw.close();
@@ -229,26 +237,28 @@ public class Comentarios extends JFrame {
 			 ActionListener pressBoton = new ActionListener() {
 				 @Override
 				 public void actionPerformed(ActionEvent arg0) {
-					 if (textArea.getText().isEmpty() || (textArea.getText().compareTo("\\s* \\s*")==0)) {
+					 textArea.setText(textArea.getText().trim());   //trim elimina espacios y saltos de linea al inicio y final de la cadena, justo lo que necesitaba
+					 cajaNombre.setText(cajaNombre.getText().trim());
+					 
+					 if (textArea.getText().isEmpty()) {
 						 JOptionPane.showMessageDialog(null, "No se puede añadir un comentario vacio.");
 					 }//si area de texto vacia
+					 
 					 else if (cajaNombre.getText().isEmpty()) {
 						 JOptionPane.showMessageDialog(null, "Para poder enviar un comentario debe identificarse.");
 					 }//si caja de texto vacia
+					 else if (cajaNombre.getText().contains("#")) {
+						 JOptionPane.showMessageDialog(null, "Lo sentimos, no se permite usar el caracter '#' en el nombre.");
+					 }
 					 else {
 					 	try {
 					 		crearArch();
-					 		String nombre = cajaNombre.getText();
-					 		//OCURRE ALGO RARO Y ESTO NO ME LO HACE AAAAAAA
-					 		//DEBO VERIFICAR QUE EL NOMBRE NO PUEDE CONTENER EL CARACTER DELIMITADOR
-					 		//DEBO VERIFICAR QUE EL NOMBRE NO PUEDE CONTENER SALTOS DE LINEA
-					 		//DEBO ARREGLARLO PARA QUE LOS SALTOS DE LINEA INNECESARIOS NO ME LOS CUENTA
-					 		//Y QUE UN COMENTARIO NO PUEDA TENER SOLO SALTOS DE LINEA O ESPACIOS (no funciono lo que hice)
-					 		JLabel noPub = new JLabel("De: " + nombre + " el " + Calendar.getInstance().getTime());
-					 		noPub.setFont(new Font("Arial", Font.ITALIC, 14));
-					 		noPub.setBackground(Color.LIGHT_GRAY);
-					 		cajaDer.add(noPub);
 					 		
+					 		cajaDer.removeAll();
+							cargarPublicaciones();
+							
+							getContentPane().revalidate();
+							getContentPane().repaint();
 					 	} catch (IOException e) {
 					 		e.printStackTrace();
 					 		System.out.println("Ocurrio un error extraño.");
@@ -257,8 +267,6 @@ public class Comentarios extends JFrame {
 				 }//actionPerformed
 			 };//actionListener 
 			 enviar.addActionListener(pressBoton);
-			 this.revalidate();
-			 this.repaint();
 			 break;
 			 
 		 case 2:
