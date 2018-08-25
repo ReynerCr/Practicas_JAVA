@@ -130,10 +130,10 @@ public class Comentarios extends JFrame {
 		descripcion.setFont(new Font("Calibri", Font.ITALIC, 16));
 		descripcion.setForeground(Color.BLUE);
 		
-		cierre = new JLabel("Publicado el: "+ Calendar.getInstance().getTime());
+		cierre = new JLabel("No se han cargado publicaciones.");
 		cierre.setFont(new Font("Calibri", Font.BOLD, 12));
 		
-		fondo.add(cierre, BorderLayout.PAGE_END);
+		fondo.add(cierre, BorderLayout.PAGE_END);		
 		fondo.add(descripcion, BorderLayout.PAGE_START);
 		panel.add(etiquetica, BorderLayout.PAGE_START);
 	}//iniciarEtiqueta
@@ -167,7 +167,7 @@ public class Comentarios extends JFrame {
 	}//iniciarBotones
 	
 	private void cargarPublicaciones() {
-		int cont = 0;
+		int cont = 1;
 		
 		publicacion = new JLabel("Publicaciones: ");
 		publicacion.setBackground(Color.LIGHT_GRAY);
@@ -199,9 +199,13 @@ public class Comentarios extends JFrame {
 				
 				panelPub.add(pub);
 				panelPub.add(eliminarPub);
-				cajaDer.add(panelPub);
 				
-				while (entrada.next().compareTo("---------------")!=0) {
+				
+				cajaDer.add(panelPub, cont);
+				presionarPublicacion(cajaDer.getComponentCount(), pub);
+				
+				
+				while (entrada.next().compareTo("###############")!=0) {
 					entrada.nextLine();
 				}//llego hasta la linea delimitadora
 				entrada.nextLine(); //me salto el texto hasta la linea delimitadora
@@ -227,13 +231,51 @@ public class Comentarios extends JFrame {
 		
 		pw.println(nombre + "#" + Calendar.getInstance().getTime() + "#");
 		pw.println(textArea.getText());
-		pw.println("---------------");
+		pw.println("###############");
 		pw.close();
+	}
+	
+	private void cargarUnComentario(int aux) {
+		int i = 0;
+		try {
+			textArea.setText("");
+			cajaNombre.setText("");
+			
+			Scanner entrada = new Scanner(new File("comentarios.txt"));
+			String linea;
+			
+			while (entrada.hasNextLine() && i<aux) {
+				linea = entrada.nextLine();
+				if (linea.compareTo("###############")==0) {
+					i++;
+				}//llego hasta la linea delimitadora
+			}//while para saltarme los comentarios que no voy a copiar
+			
+			linea = entrada.nextLine();
+			StringTokenizer tokenizer = new StringTokenizer(linea, "#");
+			linea = tokenizer.nextToken();
+			cajaNombre.setText(linea);
+			linea = tokenizer.nextToken();
+			cierre.setText("Publicado el: " + linea);
+
+			linea = entrada.nextLine(); //debio funcionar con un entrada.nextLine(), igual con el while pero no se por que se volvia loco y entonces lo dejo asi.
+			
+			while (entrada.hasNextLine() && linea.compareTo("###############")!=0) {
+				textArea.append(linea);
+				linea = entrada.nextLine();
+			}//while
+			entrada.close();
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "Ocurrio un error al abrir el comentario, reintente luego.");
+		}//catch
+		
+		this.revalidate();
+		this.repaint();
 	}
 	
 	private void iniciarEventos(int i) {
 		switch (i) {
-		 case 1:
+		 case 1: {
 			 ActionListener pressBoton = new ActionListener() {
 				 @Override
 				 public void actionPerformed(ActionEvent arg0) {
@@ -243,7 +285,9 @@ public class Comentarios extends JFrame {
 					 if (textArea.getText().isEmpty()) {
 						 JOptionPane.showMessageDialog(null, "No se puede añadir un comentario vacio.");
 					 }//si area de texto vacia
-					 
+					 else if (textArea.getText().contains("###############")) {
+						 JOptionPane.showMessageDialog(null, "Lo sentimos, no se permite crear un comentario que contenga \"###############\".");
+					 }
 					 else if (cajaNombre.getText().isEmpty()) {
 						 JOptionPane.showMessageDialog(null, "Para poder enviar un comentario debe identificarse.");
 					 }//si caja de texto vacia
@@ -257,19 +301,25 @@ public class Comentarios extends JFrame {
 					 		cajaDer.removeAll();
 							cargarPublicaciones();
 							
+							textArea.setText("");
+							cajaNombre.setText("");
+							
+							cierre.setText("Comentario guardado correctamente, no hay publicaciones cargadas.");
+							
 							getContentPane().revalidate();
 							getContentPane().repaint();
 					 	} catch (IOException e) {
 					 		e.printStackTrace();
-					 		System.out.println("Ocurrio un error extraño.");
+					 		JOptionPane.showMessageDialog(null, "Ocurrio un error extraño.");
 					 	}//catch
 					 }//else para cuando esta correcto
 				 }//actionPerformed
 			 };//actionListener 
 			 enviar.addActionListener(pressBoton);
+		 	}
 			 break;
 			 
-		 case 2:
+		 case 2: {
 			 KeyListener teclado = new KeyListener() {
 				@Override
 				public void keyPressed(KeyEvent arg0) {
@@ -285,18 +335,31 @@ public class Comentarios extends JFrame {
 						enviar.doClick();
 					}//cuando se presione enter mientras se esta en la caja de texto se guardara
 				}
-			 };
+			};
 			 
-			 cajaNombre.addKeyListener(teclado);
-			 break;
-		 case 3:
+			cajaNombre.addKeyListener(teclado);
+		 	}
+			break;
+		 case 3: //para cuando presionan una publicacion
 			 
-			 break;
+			break;
 			 
 		 case 4:
 			 
 			 break;
 		}//switch
 	}//iniciarEventos
+	
+	private void presionarPublicacion(int auxi, JButton pub) {
+		ActionListener pressPub = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int aux = auxi-2;
+				cargarUnComentario(aux);
+			}//actionPerformed
+	 	};
+	 	
+	 	pub.addActionListener(pressPub);
+	}//presionarPublicacion
 	
 }//class Chat
