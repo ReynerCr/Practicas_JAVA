@@ -1,5 +1,6 @@
 package archivos;
 
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -45,7 +46,7 @@ public class Archivo {
 			
 			linea = bf.readLine();
 		}
-		
+				
 		bf.close();
 	}
 }

@@ -1,5 +1,6 @@
 package archivos;
 
+import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,10 +36,10 @@ public class Main {
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("No se encontro el archivo, se procedera a crearlo.");
+			crearArch();
+			entrada = new Scanner(new File("prueba.dat"));
 		}
 		
-		entrada = new Scanner(new File("prueba.dat"));
-		crearArch();
 		leerArch(entrada);
 		
 		entrada.close();

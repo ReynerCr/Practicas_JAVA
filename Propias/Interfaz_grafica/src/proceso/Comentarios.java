@@ -167,7 +167,7 @@ public class Comentarios extends JFrame {
 	}//iniciarBotones
 	
 	private void cargarPublicaciones() {
-		int cont = 1;
+		int cont = 1;     cajaDer.removeAll();
 		
 		publicacion = new JLabel("Publicaciones: ");
 		publicacion.setBackground(Color.LIGHT_GRAY);
@@ -203,7 +203,7 @@ public class Comentarios extends JFrame {
 				
 				cajaDer.add(panelPub, cont);
 				presionarPublicacion(cajaDer.getComponentCount(), pub);
-				
+				eliminarPublicacion(cajaDer.getComponentCount(), eliminarPub);
 				
 				while (entrada.next().compareTo("###############")!=0) {
 					entrada.nextLine();
@@ -213,7 +213,8 @@ public class Comentarios extends JFrame {
 				cont++;
 			}
 			entrada.close();
-		} catch(FileNotFoundException e) {
+		} catch(IOException e) {
+			JOptionPane.showMessageDialog(null, ("Ocurrio un error inesperado. " + e.getMessage()));
 		}//try de leerArchivo
 		
 		if(cont == 0) {
@@ -234,6 +235,89 @@ public class Comentarios extends JFrame {
 		pw.println("###############");
 		pw.close();
 	}
+	private void saltarComentario(String linea, Scanner entrada) {
+		while (entrada.hasNextLine() && linea.compareTo("###############")!=0) {
+			linea = entrada.nextLine();
+		}//while para saltar comentarios
+	}//saltarComentario
+	
+	private void eliminarPublicacion(int auxi, JButton pub) {
+		ActionListener eliminarPub = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int aux = auxi-2;
+				borrarPublicacion(aux);
+			}//actionPerformed
+	 	};
+	 	
+	 	pub.addActionListener(eliminarPub);
+	}
+	
+	private void borrarPublicacion(int aux) {
+		int i = 0;
+		try {
+			File arch = new File("comentarios.txt");
+			
+			boolean mover = arch.renameTo(new File("comentarios1.txt"));
+			if (!mover) {
+				throw new IOException("No se pudo editar el archivo (posiblemente permisos insuficientes).");
+			}//rompo el try y mando mensaje
+			
+			arch = new File("comentarios1.txt");
+			
+			Scanner entrada = new Scanner(arch);
+			String linea = "";
+			
+			FileWriter fw = new FileWriter(new File("comentarios.txt"), true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter pw = new PrintWriter(bw);
+			
+			while (entrada.hasNextLine()) {
+				if (i==aux) {
+					linea = entrada.nextLine(); //el scanner quedo en la linea delimitadora y eso me hace bucle infinito en la funcion de salto
+					saltarComentario(linea, entrada);
+					i++;
+				}
+				else {
+					linea = entrada.nextLine();
+					pw.println(linea);
+					
+					if (linea.compareTo("###############")==0) 
+						i++;
+					
+				}//else
+			}//while
+			
+			cajaNombre.setText("");
+			textArea.setText("");
+			
+			entrada.close();
+			arch.delete();
+			pw.close();
+			
+			cierre.setText("Comentario eliminado satisfactoriamente.");
+		}//try
+		catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Ocurrio un error al abrir. " + e.getMessage());
+			e.printStackTrace();
+		}//catch
+		
+		cargarPublicaciones();
+		this.revalidate();
+		this.repaint();
+	}//borrarPublicacion
+	
+	private void presionarPublicacion(int auxi, JButton pub) {
+		ActionListener pressPub = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int aux = auxi-2;
+				cargarUnComentario(aux);
+			}//actionPerformed
+	 	};
+	 	
+	 	pub.addActionListener(pressPub);
+	}//presionarPublicacion
 	
 	private void cargarUnComentario(int aux) {
 		int i = 0;
@@ -242,14 +326,12 @@ public class Comentarios extends JFrame {
 			cajaNombre.setText("");
 			
 			Scanner entrada = new Scanner(new File("comentarios.txt"));
-			String linea;
+			String linea = "";
 			
-			while (entrada.hasNextLine() && i<aux) {
-				linea = entrada.nextLine();
-				if (linea.compareTo("###############")==0) {
-					i++;
-				}//llego hasta la linea delimitadora
-			}//while para saltarme los comentarios que no voy a copiar
+			while (i<aux && entrada.hasNextLine()) {
+				saltarComentario(linea, entrada);
+				i++;
+			}//while
 			
 			linea = entrada.nextLine();
 			StringTokenizer tokenizer = new StringTokenizer(linea, "#");
@@ -264,6 +346,7 @@ public class Comentarios extends JFrame {
 				textArea.append(linea);
 				linea = entrada.nextLine();
 			}//while
+			
 			entrada.close();
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "Ocurrio un error al abrir el comentario, reintente luego.");
@@ -271,7 +354,7 @@ public class Comentarios extends JFrame {
 		
 		this.revalidate();
 		this.repaint();
-	}
+	}//cargarUnComentario
 	
 	private void iniciarEventos(int i) {
 		switch (i) {
@@ -298,7 +381,6 @@ public class Comentarios extends JFrame {
 					 	try {
 					 		crearArch();
 					 		
-					 		cajaDer.removeAll();
 							cargarPublicaciones();
 							
 							textArea.setText("");
@@ -350,16 +432,5 @@ public class Comentarios extends JFrame {
 		}//switch
 	}//iniciarEventos
 	
-	private void presionarPublicacion(int auxi, JButton pub) {
-		ActionListener pressPub = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				int aux = auxi-2;
-				cargarUnComentario(aux);
-			}//actionPerformed
-	 	};
-	 	
-	 	pub.addActionListener(pressPub);
-	}//presionarPublicacion
 	
-}//class Chat
+}//class Comentarios
