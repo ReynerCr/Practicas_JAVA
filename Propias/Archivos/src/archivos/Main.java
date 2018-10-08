@@ -3,80 +3,47 @@ package archivos;
 import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Scanner;
+
+import archivos.Auto;
+
 
 public class Main {
 	
-	public static void main(String[] args) throws IOException {
-		/*Archivo archivito = new Archivo();
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		Auto auto1 = new Auto("Fiat", "Siena", 1999);
+		Auto auto2 = new Auto("Chevrolet", "Spark", 2006);
 		
-		try {
-			archivito.leerArch();
-		}
-		catch (IOException e) {
-			if (e instanceof FileNotFoundException) {
-				noArch(archivito);
-			}//para cuando no se encuentra el archivo
-			else {
-				System.out.println("Ocurrio un error inesperado que no se resolver.");
-			}//para IOException en general
-		}//catch
-
-		finally {
-			System.out.println("\n\n\nSe termino la ejecucion del programa.");
-		}*/
-		Scanner entrada = null;
+		FileOutputStream salArch = new FileOutputStream("autos.dat");
+		ObjectOutputStream salStream = new ObjectOutputStream (salArch);
 		
-		try {
-			entrada = new Scanner(new File("prueba.dat"));
-			
-		} catch (FileNotFoundException e) {
-			System.out.println("No se encontro el archivo, se procedera a crearlo.");
-			crearArch();
-			entrada = new Scanner(new File("prueba.dat"));
-		}
+		salStream.writeObject(auto1);
+		salStream.writeObject(auto2);
 		
-		leerArch(entrada);
+		salStream.close();
 		
-		entrada.close();
-		System.out.println("Se termino la ejecucion del programa.");
+		FileInputStream entArch = new FileInputStream("autos.dat");
+		ObjectInputStream entStream = new ObjectInputStream (entArch);
 		
+		Auto auto3 = (Auto) entStream.readObject();
+		System.out.println(auto1.toString());
+		
+		System.out.println("\n-----------");
+		
+		Auto auto4 = (Auto) entStream.readObject();
+		System.out.println(auto4.toString());
+		
+		System.out.println("\n se acabo");
 		
 	}
-	
-	public static void crearArch() throws IOException {
-		FileWriter fw = new FileWriter("prueba.dat", true);  //true permite APPEND al archivo
-		BufferedWriter bw = new BufferedWriter(fw);
-		PrintWriter pw = new PrintWriter(bw);
-		
-		pw.println("Holaa");
-		pw.println("Hasta aquí queda");
-		pw.println("------");
-		pw.close();
-	}
-	
-	public static void leerArch(Scanner entrada) {
-		while (entrada.hasNextLine()) {
-			String linea;
-			linea = entrada.nextLine();
-			System.out.println(linea);
-		}
-	}
-	
-	/*public static void noArch(Archivo archivito) {
-		System.out.println("No se encontro el archivo, se creara:\n\n");
-		
-		try {
-			archivito.crearArch();
-			archivito.leerArch();
-		} catch (IOException e1) {
-			System.out.println("Ops, ocurrio un error inesperado que no se resolver.");
-		}
-		
-	}//noArch para cuando no se encontro*/
 
 }

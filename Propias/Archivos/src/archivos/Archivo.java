@@ -15,7 +15,6 @@ public class Archivo {
 	public String arch = "prueba.dat";
 	
 	public void crearArch() throws IOException {
-		
 		FileWriter archivo = new FileWriter(arch);  //busco el archivo
 		BufferedWriter br = new BufferedWriter(archivo);  //lo meto en buffer
 		PrintWriter salidaArch =  new PrintWriter(br);  //ahora declaro la clase con el archivo en buffer para poder escribir
