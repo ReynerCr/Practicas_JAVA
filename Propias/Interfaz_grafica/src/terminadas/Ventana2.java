@@ -75,7 +75,7 @@ public class Ventana2 extends JFrame {
 	private void colocarBoton() {
 		boton = new JButton();
 		
-		ImageIcon imagen = new ImageIcon("flecha.png");
+		ImageIcon imagen = new ImageIcon("src\\recursos\\lecha.png"); 
 		boton.setIcon(new ImageIcon (imagen.getImage().getScaledInstance(80, 40, Image.SCALE_FAST)));
 		boton.setMnemonic(KeyEvent.VK_ENTER);
 		

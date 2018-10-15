@@ -120,7 +120,7 @@ public class Comentarios extends JFrame {
 		etiqueta.setFont(new Font("Arial", Font.BOLD, 30));
 		etiqueta.setForeground(Color.WHITE);
 		
-		ImageIcon imagen = new ImageIcon("fantasma.png");
+		ImageIcon imagen = new ImageIcon("src\\recursos\\fantasma.png");
 		JLabel imagencita = new JLabel(new ImageIcon (imagen.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));
 		
 		etiquetica.add(imagencita, BorderLayout.LINE_START);
@@ -177,7 +177,7 @@ public class Comentarios extends JFrame {
 		cajaDer.add(publicacion);
 		
 		try {
-			Scanner entrada = new Scanner(new File("comentarios.txt"));
+			Scanner entrada = new Scanner(new File("src\\recursos\\comentarios.txt"));
 			while (entrada.hasNextLine()) {
 				String nombre, fecha;
 				String linea = entrada.nextLine();
@@ -192,7 +192,7 @@ public class Comentarios extends JFrame {
 				pub.setFont(new Font("Arial", Font.ITALIC, 12));
 				pub.setMargin(new Insets(0,0,0,0));
 				
-				ImageIcon imagen = new ImageIcon("remove.png");
+				ImageIcon imagen = new ImageIcon("src\\recursos\\remove.png");
 				JButton eliminarPub = new JButton(new ImageIcon(imagen.getImage().getScaledInstance(20, 17, Image.SCALE_FAST)));
 				eliminarPub.setContentAreaFilled(false);
 				eliminarPub.setMargin(new Insets(0,0,0,0));
@@ -226,7 +226,7 @@ public class Comentarios extends JFrame {
 	
 	private void crearArch() throws IOException {
 		String nombre = cajaNombre.getText();
-		FileWriter fw = new FileWriter("comentarios.txt", true);
+		FileWriter fw = new FileWriter("src\\recursos\\comentarios.txt", true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter pw = new PrintWriter(bw);
 		
@@ -256,19 +256,19 @@ public class Comentarios extends JFrame {
 	private void borrarPublicacion(int aux) {
 		int i = 0;
 		try {
-			File arch = new File("comentarios.txt");
+			File arch = new File("src\\recursos\\comentarios.txt");
 			
-			boolean mover = arch.renameTo(new File("comentarios1.txt"));
+			boolean mover = arch.renameTo(new File("src\\recursos\\comentarios1.txt"));
 			if (!mover) {
 				throw new IOException("No se pudo editar el archivo (posiblemente permisos insuficientes).");
 			}//rompo el try y mando mensaje
 			
-			arch = new File("comentarios1.txt");
+			arch = new File("src\\recursos\\comentarios1.txt");
 			
 			Scanner entrada = new Scanner(arch);
 			String linea = "";
 			
-			FileWriter fw = new FileWriter(new File("comentarios.txt"), true);
+			FileWriter fw = new FileWriter(new File("src\\recursos\\comentarios.txt"), true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			PrintWriter pw = new PrintWriter(bw);
 			
@@ -325,7 +325,7 @@ public class Comentarios extends JFrame {
 			textArea.setText("");
 			cajaNombre.setText("");
 			
-			Scanner entrada = new Scanner(new File("comentarios.txt"));
+			Scanner entrada = new Scanner(new File("src\\recursos\\comentarios.txt"));
 			String linea = "";
 			
 			while (i<aux && entrada.hasNextLine()) {
