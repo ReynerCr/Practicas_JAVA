@@ -1,4 +1,4 @@
-package proceso;
+package ventana;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,6 +31,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+
+//SI SE UTILIZA NETBEANS HAY QUE ACOMODAR LAS RUTAS DE LAS IMAGENES PARA QUE CONCUERDEN CON EL DIRECTORIO DE ESE IDE
+
 
 @SuppressWarnings("serial")
 public class Comentarios extends JFrame {
@@ -177,7 +181,7 @@ public class Comentarios extends JFrame {
 		cajaDer.add(publicacion);
 		
 		try {
-			Scanner entrada = new Scanner(new File("src\\recursos\\comentarios.txt"));
+			Scanner entrada = new Scanner(new File("src\\recursos\\ventana.txt"));
 			while (entrada.hasNextLine()) {
 				String nombre, fecha;
 				String linea = entrada.nextLine();
@@ -226,7 +230,7 @@ public class Comentarios extends JFrame {
 	
 	private void crearArch() throws IOException {
 		String nombre = cajaNombre.getText();
-		FileWriter fw = new FileWriter("src\\recursos\\comentarios.txt", true);
+		FileWriter fw = new FileWriter("src\\recursos\\ventana.txt", true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter pw = new PrintWriter(bw);
 		
@@ -238,7 +242,7 @@ public class Comentarios extends JFrame {
 	private void saltarComentario(String linea, Scanner entrada) {
 		while (entrada.hasNextLine() && linea.compareTo("###############")!=0) {
 			linea = entrada.nextLine();
-		}//while para saltar comentarios
+		}//while para saltar ventana
 	}//saltarComentario
 	
 	private void eliminarPublicacion(int auxi, JButton pub) {
@@ -256,7 +260,7 @@ public class Comentarios extends JFrame {
 	private void borrarPublicacion(int aux) {
 		int i = 0;
 		try {
-			File arch = new File("src\\recursos\\comentarios.txt");
+			File arch = new File("src\\recursos\\ventana.txt");
 			
 			boolean mover = arch.renameTo(new File("src\\recursos\\comentarios1.txt"));
 			if (!mover) {
@@ -268,7 +272,7 @@ public class Comentarios extends JFrame {
 			Scanner entrada = new Scanner(arch);
 			String linea = "";
 			
-			FileWriter fw = new FileWriter(new File("src\\recursos\\comentarios.txt"), true);
+			FileWriter fw = new FileWriter(new File("src\\recursos\\ventana.txt"), true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			PrintWriter pw = new PrintWriter(bw);
 			
@@ -325,7 +329,7 @@ public class Comentarios extends JFrame {
 			textArea.setText("");
 			cajaNombre.setText("");
 			
-			Scanner entrada = new Scanner(new File("src\\recursos\\comentarios.txt"));
+			Scanner entrada = new Scanner(new File("src\\recursos\\ventana.txt"));
 			String linea = "";
 			
 			while (i<aux && entrada.hasNextLine()) {

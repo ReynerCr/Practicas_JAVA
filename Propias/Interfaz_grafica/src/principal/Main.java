@@ -1,7 +1,6 @@
 package principal;
 
-import proceso.Comentarios;
-//import terminadas.Ventana2;
+import ventana.Comentarios;
 
 public class Main {
 
