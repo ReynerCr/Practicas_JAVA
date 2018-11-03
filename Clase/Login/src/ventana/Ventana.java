@@ -42,11 +42,12 @@ public class Ventana extends JFrame {
 	}
 	
 	private void iniciar() {
+		getContentPane().removeAll();
 		this.setTitle("Iniciar sesion");
 		
-		iniciarCampos();
-		iniciarBotones();
-		registroYolvidoC();
+		iniciarCampos(); //elemento 1
+		iniciarBotones(); //elemento 2
+		registroYolvidoC(); //elemento 3
 		
 		pack();
 		getContentPane().revalidate();
@@ -87,51 +88,20 @@ public class Ventana extends JFrame {
 					JTextField contrasena = (JTextField) campos.getComponent(3);
 					contrasena.setText(contrasena.getText().trim());
 					
-					if (!contrasena.getText().isEmpty()) {
-						Scanner entrada;
-						boolean correcto = false;
+						if (!contrasena.getText().isEmpty()) {
+							
+						String linea = buscarUnDato(usuario.getText(), 2);
 						
-						try {
-							entrada = new Scanner(new File("src\\recursos\\cuentas.dat"));
-							while (entrada.hasNextLine()) {
-								String linea = entrada.nextLine();
-								
-								if(linea.compareTo("######") == 0) {
-									linea = entrada.nextLine();
-									StringTokenizer tokenizer = new StringTokenizer(linea, "#####");
-									System.out.println(linea);
-									linea = tokenizer.nextToken();
-									System.out.println(linea);
-									
-									if (linea.compareTo(usuario.getText()) == 0) {
-										linea = tokenizer.nextToken();
-										if (linea.compareTo(contrasena.getText()) != 0) {
-											break;
-										}//si contrasena no coincide rompo el ciclo TODO validar que no se repitan usuarios
-										else {
-											correcto = true;
-											
-											JOptionPane.showMessageDialog(null, "¡Hola " + usuario.getText() + "!");
-											usuario.setText("");
-											contrasena.setText("");
-										}//cuando todo esta correcto e inicio sesion bien
+						if (linea.compareTo(contrasena.getText()) == 0) {
+							JOptionPane.showMessageDialog(null, "¡Hola " + usuario.getText() + "!");
+							usuario.setText("");
+							contrasena.setText("");
+						}//si contrasena no coincide rompo el ciclo
+						else {
+							JOptionPane.showMessageDialog(null, "Nombre o contrasena incorrectos.");
+						}//cuando todo esta correcto e inicio sesion bien
 
-									}//si nombre no coincide rompo el ciclo
-								}//si consigue el separador
-							}//while hayan mas lineas
-							
-							if (!correcto) {
-								JOptionPane.showMessageDialog(null, "Nombre o contrasena incorrectos.");
-							}
-							
-							entrada.close();
-						} catch (FileNotFoundException e) {
-							JOptionPane.showMessageDialog(null, "Ha ocurrido un error al leer! " + e.getMessage());
-						}
-						
-						
-						
-					}//si campo de contrasena no esta vacio
+						}//si campo de contrasena no esta vacio
 					else {
 						JOptionPane.showMessageDialog(null, "Campo de contrasena no puede estar vacio.");
 					}
@@ -160,7 +130,54 @@ public class Ventana extends JFrame {
 		botones.add(cancelar);
 		this.getContentPane().add(botones);
 	}//iniciarBotones
+	
+	//Metodo que busca a un usuario por su nombre y si lo consigue retorna alguno de sus datos
+	private String buscarUnDato(String usuario, int opcion) {
+		String linea = "";
+		try {
+			Scanner entrada = new Scanner(new File("src\\recursos\\cuentas.dat"));
+			
+			while (entrada.hasNextLine()) {
+				linea = entrada.nextLine();
+				if(linea.compareTo("######") == 0) {
+					linea = entrada.nextLine();
+					StringTokenizer tokenizer = new StringTokenizer(linea, "#####");
+					linea = tokenizer.nextToken();
+					
+					if (linea.compareTo(usuario) == 0) {
+						switch (opcion) {
+							case 1: //retornar usuario
+								break;
+							case 2: //retornar contrasena
+								linea = tokenizer.nextToken();
+								break;
+							default: //no deberia tener uso pero por si acaso
+								linea = "";
+								break;
+						}//diferentes acciones segun lo que este buscando
+						entrada.close();
+						return linea;
+					}//si nombre coincide entonces compruebo que tipo de dato quiero retornar
+				}//si consigue el separador entre cuentas
+			}//while hayan mas lineas
+			
+			entrada.close();
+		} catch (FileNotFoundException e) {
+			crearArch();
+		}
 
+		return ""; //no se consiguio usuario
+	}//buscarContrasena
+	
+	private void crearArch() {
+		try {
+			FileWriter fw = new FileWriter("src\\recursos\\cuentas.dat", true);
+			fw.close();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Ocurrio un error al leer el archivo!" + e.getMessage());
+		}
+	}//crearArch
+		
 	private void registroYolvidoC() {
 		JPanel registroYolvido = new JPanel(new FlowLayout());
 		
@@ -177,9 +194,80 @@ public class Ventana extends JFrame {
 		olvido.setForeground(Color.blue);
 		olvido.setBorderPainted(false);
 		olvido.setContentAreaFilled(false);
+		olvido.addActionListener(olvidoCont());
+		
 		registroYolvido.add(olvido);
+		
 		this.getContentPane().add(registroYolvido);
 	}//registroYolvidoC
+	
+	private ActionListener olvidoCont() {
+		ActionListener olvido = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setTitle("Recuperacion de contrasena");
+				getContentPane().remove(0);
+				getContentPane().remove(1);
+
+				JLabel etiqueta = new JLabel("Ingresa el usuario:");
+				JTextField usuario = new JTextField();
+				usuario.setFont(new Font("Arial", Font.BOLD, 15));
+				
+				JLabel dialogo = new JLabel("    ");
+				dialogo.setFont(new Font("Arial", Font.BOLD, 15));
+				dialogo.setForeground(Color.blue);
+				
+				JButton comprobar = (JButton) botones.getComponent(0);
+				eliminarALs(comprobar);
+				comprobar.setText("Comprobar");
+				comprobar.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						usuario.setText(usuario.getText().trim());
+						
+						if (!usuario.getText().isEmpty()) {
+							String contra = buscarUnDato(usuario.getText(), 2);
+							if (contra.compareTo("") != 0) {
+								dialogo.setText("Su contrasena es: " + contra);
+							}
+							else {
+								dialogo.setText("Nombre de usuario no registrado.");
+							}
+						}//si no esta vacia la caja
+						else {
+							JOptionPane.showMessageDialog(null, "Campo de usuario no puede estar vacio.");
+						}
+						
+						pack();
+						getContentPane().revalidate();
+						getContentPane().repaint();
+					}//actionPerformed
+				});
+				
+				JButton volver = (JButton) botones.getComponent(1);
+				eliminarALs(volver);
+				volver.setText("Volver");
+				volver.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						iniciar();
+					}
+				});
+				
+				getContentPane().add(etiqueta, 0);
+				getContentPane().add(usuario, 1);
+				getContentPane().add(botones, 2);
+				getContentPane().add(dialogo, 3);
+				
+				pack();
+				getContentPane().revalidate();
+				getContentPane().repaint();
+				
+			}//actionPerformed
+		};//ActionListener
+		
+		return olvido;
+	}//olvidoCont
 	
 	private ActionListener registrar() {
 		ActionListener registro = new ActionListener() {
@@ -199,25 +287,37 @@ public class Ventana extends JFrame {
 						usuario.setText(usuario.getText().trim());
 						if (!usuario.getText().isEmpty()) {
 							contrasena.setText(contrasena.getText().trim());
-							//TODO VALIDAR QUE NO CONTENGAN #####
 							if (!contrasena.getText().isEmpty()) {
-								try {
-									FileWriter fw = new FileWriter("src\\recursos\\cuentas.dat", true);
-									BufferedWriter bw = new BufferedWriter(fw);
-									PrintWriter pw = new PrintWriter(bw);
-									
-									pw.println("######");
-									pw.println(usuario.getText()+"#####"+contrasena.getText());
-									
-									JOptionPane.showMessageDialog(null, "Hecho, ya puede iniciar sesion.");
-									pw.close();
-								} catch (IOException e) {
-									JOptionPane.showMessageDialog(null, "Ha ocurrido un error al abrir! " + e.getMessage());
+								if (usuario.getText().contains("#")) {
+									JOptionPane.showMessageDialog(null, "Lo sentimos, no se permite crear un nombre de usuario que contenga el siguiente caracter: #");
 								}
-								
-								//borro todo y luego vuelvo a mandar al menu inicial
-								getContentPane().removeAll();
-								iniciar();
+								else if (!contrasena.getText().contains("#")) {
+									if ("".compareTo(buscarUnDato(usuario.getText(), 1)) == 0) {
+										try {
+											FileWriter fw = new FileWriter("src\\recursos\\cuentas.dat", true);
+											BufferedWriter bw = new BufferedWriter(fw);
+											PrintWriter pw = new PrintWriter(bw);
+											
+											pw.println("######");
+											pw.println(usuario.getText()+"#####" + contrasena.getText());
+											
+											JOptionPane.showMessageDialog(null, "Hecho, ya puede iniciar sesion.");
+											pw.close();
+										} catch (IOException e) {
+											JOptionPane.showMessageDialog(null, "Ha ocurrido un error grave:  " + e.getMessage());
+										}
+										
+										//borro todo y luego vuelvo a mandar al menu inicial
+										getContentPane().removeAll();
+										iniciar();
+									}//que no exista un usario con el mismo nombre
+									else {
+										JOptionPane.showMessageDialog(null, "Ya existe un usuario con el mismo nombre.");
+									}
+								}//que la contrasena no contenga la cadena de caracteres que separan las cuentas (#####)
+								else {
+									JOptionPane.showMessageDialog(null, "Lo sentimos, no se permite crear una contrasena que contenga el siguiente caracter: #");
+								}
 							}//si campo de contrasena no esta vacio
 							else {
 								JOptionPane.showMessageDialog(null, "Campo de contrasena no puede estar vacio.");
@@ -234,7 +334,6 @@ public class Ventana extends JFrame {
 				volver.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						getContentPane().removeAll();
 						iniciar();
 					}//actionPerformed
 				});
