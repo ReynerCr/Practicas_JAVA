@@ -110,7 +110,6 @@ public class Juego extends JFrame {
 		principal.add(inferior);
 	}//iniciarParteInferior
 	
-	
 	private void reiniciarBotones() {
 		simboloHumano = ((int) (Math.random() * 2) == 0 ? 'O':'X');
 		simboloIA = (simboloHumano == 'X' ? 'O':'X');
@@ -138,13 +137,17 @@ public class Juego extends JFrame {
 		return pressCasilla;
 	}//eventoCasilla
 	
-	//PRACTICA: TERMINAR LA PANTALLA DE LOGIN Y CUANDO DEN CLICK A ACEPTAR DE UN MENSAJE DE BIENVENIDA (+ NOMBRE DE USUARIO) Y CUANDO LE DE A CANCELAR BORRA LOS CAMPOS.
-	
 	private void reinicio(JButton reinicio) {
 		ActionListener pressReincio = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				reiniciarBotones();
+			
+				victorias = 0;
+				derrotas = 0;
+				empates = 0;
+				principal.remove(2);
+				iniciarParteInferior();
 				
 				revalidate();
 				repaint();
