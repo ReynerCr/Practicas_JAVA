@@ -1,3 +1,7 @@
+/* Programa para registrar personas en una lista y verificar que no se repitan por la C.I.
+ * De libre uso (aunque tampoco se a quien le pueda llegar a interesar).
+ * Autor: Reyner Contreras. */
+
 package ventana;
 
 import java.awt.Color;
@@ -8,17 +12,16 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,23 +47,16 @@ public class Ventana extends JFrame {
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.getContentPane().setBackground(Color.lightGray);
 		setLocationRelativeTo(null);
-		
+
 		iniciarFramePrincipal();
-		this.pack();
-		setLocation(this.getLocation().x - this.getWidth(), 0);
-		
 		iniciarFrameListado();
 		
-		//Cargo la imagen para los iconos
-		try {
-			InputStream imgStream = Ventana.class.getResourceAsStream("list.png");
-			BufferedImage miImg;
-			miImg = ImageIO.read(imgStream);
-			this.setIconImage(miImg);
-			listado.setIconImage(miImg);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Error al cargar icono de listado. " + e.getMessage());
-		}
+		//anyado el icono a ambos frames
+		ImageIcon icono = new ImageIcon("src\\recursos\\icon.png");
+		this.setIconImage(icono.getImage());
+		listado.setIconImage(icono.getImage());
+		
+		//hago visibles ambos frames
 		this.setVisible(true);
 		listado.setVisible(true);
 	}//ventana()
@@ -107,16 +103,31 @@ public class Ventana extends JFrame {
 		continuar.addActionListener(eventoContinuar(nombre, ci));
 		this.getContentPane().add(continuar);
 		
-		//Añado el contador de personas por primera vez
+		//Anyado el contador de personas por primera vez
 		contadorPersonas = 0;
 		try {
 			contadorPersonas = buscarEnArchivo("");
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Ha ocurrido un error grave: " +e.getMessage());
+			contadorPersonas = 0;
 		} 
 		cantidadPersonas = new JLabel("Personas registradas: " + contadorPersonas);
 		this.getContentPane().add(cantidadPersonas);
 		
+		//Escuchadora de minimizado
+		this.addWindowListener(new WindowAdapter() {
+				public void windowIconified(WindowEvent e) {
+					listado.setVisible(false);
+				}
+	
+			    public void windowDeiconified(WindowEvent e) {
+			    	listado.setVisible(true);
+			    }
+			}//WindowAdapter
+		);
+		
+		this.pack();
+		setLocation(this.getLocation().x - this.getWidth(), 0);
 	}//inciarFramePrincipal
 	
 	/** Metodo para iniciar el frame del listado */
@@ -126,7 +137,6 @@ public class Ventana extends JFrame {
 		listado.setBackground(Color.white);
 		listado.setLocation(this.getWidth() + this.getLocation().x + 10, this.getLocation().y);
 		listado.setDefaultCloseOperation(HIDE_ON_CLOSE);
-		
 		iniciarLista();
 	}//iniciarFrameListado
 	
@@ -135,9 +145,8 @@ public class Ventana extends JFrame {
 		lista = new JPanel();
 		lista.setLayout(new BoxLayout(lista, BoxLayout.Y_AXIS));
 		lista.setBackground(Color.white);
-		lista.setPreferredSize(new Dimension(this.getWidth()-50, 400));
-		
-		JScrollPane barra = new JScrollPane(lista, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		lista.setSize(new Dimension(this.getWidth()+50, 600));
+		JScrollPane barra = new JScrollPane(lista, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		listado.add(barra);
 		cargarListado();
 	}//iniciarLista
@@ -145,28 +154,32 @@ public class Ventana extends JFrame {
 	/** Metodo para cargar la lista de personas registradas en el frame de listado. */
 	private void cargarListado() {
 		if (contadorPersonas != 0) {
+			Scanner entrada = null;
 			try {
-				Scanner entrada = new Scanner(new File("src\\recursos\\listado.dat"));
+				entrada = new Scanner(new File("src\\recursos\\listado.dat"));
 				ImageIcon imagen = new ImageIcon("src\\recursos\\remove.png");
 				while (entrada.hasNextLine()) {
-					String linea = entrada.nextLine();
+					String linea = entrada.nextLine();						
 					String[] cadenas = linea.split("#");
 					JPanel persona = new JPanel(new FlowLayout());
-					JLabel nombre = new JLabel("NOMBRE: ");
-					for (int i = 0; i < cadenas.length-1; i++) {
-						nombre.setText(nombre.getText() + cadenas[i] + " ");
-					}
-					nombre.setText(nombre.getText() + "- C.I: " + cadenas[cadenas.length-1]);
-					persona.add(nombre);
+					JLabel datos = new JLabel("NOMBRE: " + cadenas[0] + " - C.I: " + cadenas[1]);
+					persona.add(datos);
 					persona.add(botonEliminar(imagen, persona));
 					lista.add(persona);
-					lista.revalidate();
-					lista.repaint();
 				}//while hayan mas lineas
+				lista.revalidate();
+				lista.repaint();
 				entrada.close();
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, "Ocurrio un error grave: " + e.getMessage());
 			}//catch del try posible IOException
+			catch (IndexOutOfBoundsException e) {
+				entrada.close();
+				JOptionPane.showMessageDialog(null, "Ocurrio un error grave al cargar el archivo. Se recreara, por favor reinicie el programa.");
+				File arch = new File("src\\recursos\\listado.dat");
+				arch.delete();
+				System.exit(0);
+			}//catch del try posible indice fuera de rango
 		}//if contadorPersonas != 0 (hay registros)
 		else {
 			noRegistros();
@@ -219,7 +232,7 @@ public class Ventana extends JFrame {
 									JOptionPane.showMessageDialog(null, "Persona ya registrada.");
 								}//else retorna -1
 							} catch (IOException e) {
-								JOptionPane.showConfirmDialog(null, "Ocurio un error grave: " + e.getMessage());
+								JOptionPane.showMessageDialog(null, "Ocurio un error grave: " + e.getMessage());
 							}//catch del try de posible error de disco
 						} catch(NumberFormatException e) {
 							JOptionPane.showMessageDialog(null, "La cedula solo debe contener numeros.");
@@ -246,25 +259,30 @@ public class Ventana extends JFrame {
 	 *  contrario */
 	private int buscarEnArchivo (String cadena) throws IOException {
 		int posicion = 0;
+		Scanner entrada = null;
 		try {
-			Scanner entrada = new Scanner(new File("src\\recursos\\listado.dat"));
-
+			entrada = new Scanner(new File("src\\recursos\\listado.dat"));
 			while (entrada.hasNextLine()) {
 				String linea = entrada.nextLine();
 				if (!cadena.equals("")) {
 					String cadenas[] = linea.split("#");
-					if (cadenas[cadenas.length-1].equals(cadena)) {
+					if (cadenas[1].equals(cadena)) {
 						posicion = -1;
 						break;
 					}//si son iguales hago a posicion -1 y rompo el ciclo
-				}//si cedula != "" es porque quiero comparar cedulas
+				}//si cadena != "" es porque quiero comparar cedulas
 				posicion++;
 			}//while hayan mas lineas
-			
-			entrada.close();	
+			entrada.close();
 		} catch (FileNotFoundException e) {
 			File arch = new File("src\\recursos\\listado.dat");
 			arch.createNewFile();
+		} catch (IndexOutOfBoundsException e) {
+			entrada.close();
+			JOptionPane.showMessageDialog(null, "Ocurrio un error grave al cargar el archivo. Se recreara, por favor reinicie el programa.");
+			File arch = new File("src\\recursos\\listado.dat");
+			arch.delete();
+			System.exit(0);
 		}
 		
 		return posicion;
@@ -275,7 +293,7 @@ public class Ventana extends JFrame {
 		FileWriter fw = new FileWriter(new File("src\\recursos\\listado.dat"), true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter pw = new PrintWriter(bw);
-		nombre.replaceAll(" ", "#");
+		
 		pw.println(nombre + "#" + cedula);
 		pw.close();
 	}//registrarUsuario
