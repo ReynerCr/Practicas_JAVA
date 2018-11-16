@@ -197,12 +197,6 @@ public class Juego extends JFrame {
 		letras = aleatorizarOrdenLetras(letras);
 		
 		for (int i = 0; i < 4; i++) {
-			JLabel cuadro = new JLabel();
-			cuadro.setSize(40, 40);
-			cuadro.setBackground(Color.WHITE);
-			cuadro.setOpaque(true);
-			cuadro.setLocation((50 * i), 80);
-			
 			cLetras[i] = new JLabel(Character.toString(letras[i]));
 			cLetras[i].setBounds((50 * i) + 15, 90, 15, 20);
 			cLetras[i].setFont(new Font("Arial", Font.BOLD, 18));
@@ -215,6 +209,18 @@ public class Juego extends JFrame {
 			});//addMouseListener
 			
 			pCuadros.add(cLetras[i]);
+		}//for
+		
+		/*aqui hice dos for porque no se otra forma de como hacer para que los cuadros 
+		 * siempre queden detras de todas las letras */
+		
+		for (int i = 0; i < 4; i++) {
+			JLabel cuadro = new JLabel();
+			cuadro.setSize(40, 40);
+			cuadro.setBackground(Color.WHITE);
+			cuadro.setOpaque(true);
+			cuadro.setLocation((50 * i), 80);
+			
 			pCuadros.add(cuadro);
 		}//for
 		
