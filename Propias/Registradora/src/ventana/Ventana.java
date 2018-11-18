@@ -63,7 +63,7 @@ public class Ventana extends JFrame {
 	
 	/** Metodo para cargar el frame donde se registra a las personas. */
 	private void iniciarFramePrincipal() {
-		this.getContentPane().setLayout((new GridLayout(4, 2)));
+		this.getContentPane().setLayout((new GridLayout(6, 2)));
 		this.getContentPane().setBackground(Color.lightGray);
 		
 		//etiqueta para nombre
@@ -86,6 +86,24 @@ public class Ventana extends JFrame {
 		ci.setFont(new Font("Arial", Font.PLAIN, 15));
 		this.getContentPane().add(ci);
 		
+		//reutilizo etiqueta para telefono
+		etiqueta = new JLabel("Teléfono: ");
+		etiqueta.setFont(new Font("Arial", Font.BOLD, 15));
+		this.getContentPane().add(etiqueta);
+		
+		JTextField telefono = new JTextField();
+		telefono.setFont(new Font("Arial", Font.PLAIN, 15));
+		this.getContentPane().add(telefono);
+		
+		//reutilizo etiqueta para direccion
+		etiqueta = new JLabel("Dirección: ");
+		etiqueta.setFont(new Font("Arial", Font.BOLD, 15));
+		this.getContentPane().add(etiqueta);
+				
+		JTextField direccion = new JTextField();
+		direccion.setFont(new Font("Arial", Font.PLAIN, 15));
+		this.getContentPane().add(direccion);
+		
 		//boton para limpiar los campos de texto y/o abrir frame de lista
 		JButton limpiar = new JButton("Limpiar/abrir listado");
 		limpiar.addActionListener(new ActionListener() {
@@ -93,6 +111,8 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				nombre.setText("");
 				ci.setText("");
+				telefono.setText("");
+				direccion.setText("");
 				listado.setVisible(true);
 			}
 		});
@@ -100,7 +120,7 @@ public class Ventana extends JFrame {
 	
 		//Boton de aceptar
 		JButton continuar = new JButton("Registrar");
-		continuar.addActionListener(eventoContinuar(nombre, ci));
+		continuar.addActionListener(eventoContinuar(nombre, ci, telefono, direccion));
 		this.getContentPane().add(continuar);
 		
 		//Anyado el contador de personas por primera vez
@@ -108,7 +128,7 @@ public class Ventana extends JFrame {
 		try {
 			contadorPersonas = buscarEnArchivo("");
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Ha ocurrido un error grave: " +e.getMessage());
+			JOptionPane.showMessageDialog(null, "Ocurrió un error grave: " +e.getMessage());
 			contadorPersonas = 0;
 		} 
 		cantidadPersonas = new JLabel("Personas registradas: " + contadorPersonas);
@@ -124,11 +144,11 @@ public class Ventana extends JFrame {
 			    	listado.setVisible(true);
 			    }
 			}//WindowAdapter
-		);
+		);//windowListener
 		
 		this.pack();
 		setLocation(this.getLocation().x - this.getWidth(), 0);
-	}//inciarFramePrincipal
+	}//inciarFramePrincipal()
 	
 	/** Metodo para iniciar el frame del listado */
 	private void iniciarFrameListado() {
@@ -138,7 +158,7 @@ public class Ventana extends JFrame {
 		listado.setLocation(this.getWidth() + this.getLocation().x + 10, this.getLocation().y);
 		listado.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		iniciarLista();
-	}//iniciarFrameListado
+	}//iniciarFrameListado()
 	
 	/** Metodo para iniciar el panel de lista. */
 	private void iniciarLista() {
@@ -149,7 +169,7 @@ public class Ventana extends JFrame {
 		JScrollPane barra = new JScrollPane(lista, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		listado.add(barra);
 		cargarListado();
-	}//iniciarLista
+	}//iniciarLista()
 	
 	/** Metodo para cargar la lista de personas registradas en el frame de listado. */
 	private void cargarListado() {
@@ -160,7 +180,7 @@ public class Ventana extends JFrame {
 				ImageIcon imagen = new ImageIcon("src\\recursos\\remove.png");
 				while (entrada.hasNextLine()) {
 					String linea = entrada.nextLine();						
-					String[] cadenas = linea.split("#");
+					String[] cadenas = linea.split("@");
 					JPanel persona = new JPanel(new FlowLayout());
 					JLabel datos = new JLabel("NOMBRE: " + cadenas[0] + " - C.I: " + cadenas[1]);
 					persona.add(datos);
@@ -171,11 +191,11 @@ public class Ventana extends JFrame {
 				lista.repaint();
 				entrada.close();
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "Ocurrio un error grave: " + e.getMessage());
+				JOptionPane.showMessageDialog(null, "Ocurrió un error grave: " + e.getMessage());
 			}//catch del try posible IOException
 			catch (IndexOutOfBoundsException e) {
 				entrada.close();
-				JOptionPane.showMessageDialog(null, "Ocurrio un error grave al cargar el archivo. Se recreara, por favor reinicie el programa.");
+				JOptionPane.showMessageDialog(null, "Ocurrió un error grave al cargar el archivo. Se recreará, por favor reinicie el programa.");
 				File arch = new File("src\\recursos\\listado.dat");
 				arch.delete();
 				System.exit(0);
@@ -184,73 +204,87 @@ public class Ventana extends JFrame {
 		else {
 			noRegistros();
 		}//else contadorPersonas == 0 (no hay registros)
-	}//cargarListado
+	}//cargarListado()
 	
 	/** Metodo para crear el mensaje de no registros. */
 	private void noRegistros() {
 		JLabel mensaje = new JLabel("No hay personas registradas.");
 		mensaje.setFont(new Font("Arial", Font.BOLD, 14));
 		lista.add(mensaje);
-	}//noRegistros
+	}//noRegistros()
 	
-	/** Evento utilizado para el boton de registrar. Recibe dos JTextField que
-	 *  son nombre y cedula. */
-	private ActionListener eventoContinuar(JTextField nombre, JTextField ci) {
+	/** Evento utilizado para el boton de registrar. Recibe cuatro JTextField que
+	 *  son nombre, cedula, telefono y cedula. */
+	private ActionListener eventoContinuar(JTextField nombre, JTextField ci, JTextField telefono, JTextField direccion) {
 		ActionListener evento = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				nombre.setText(nombre.getText().trim());	
 				ci.setText(ci.getText().replaceAll("\\s*", ""));
+				telefono.setText(telefono.getText().replaceAll("\\s*", ""));
+				direccion.setText(direccion.getText().trim());
 				
-				//valido que nombre no contenga el caracter separador (#) del archivo
-				if (!nombre.getText().contains("#") && !nombre.getText().isEmpty()) {
+				//valido que nombre no contenga el caracter separador (@) del archivo
+				if (!nombre.getText().contains("@") && !nombre.getText().isEmpty()) {
 					//valido que campo de cedula no este vacio
 					if (!ci.getText().isEmpty()) {
 						//valido que campo de cedula solo contenga numeros
 						try {
-							Integer.parseInt(ci.getText());
+							Long.parseLong(ci.getText());
 							try {
-								if (buscarEnArchivo(ci.getText()) != -1) {
-									registrarUsuario(nombre.getText(), ci.getText());
-									
-									if (contadorPersonas == 0 )
-										lista.removeAll();
-										
-									JPanel persona = new JPanel(new FlowLayout());
-									JLabel nomb = new JLabel("NOMBRE: " + nombre.getText() + " - " + "C.I: " + ci.getText());
-									persona.add(nomb);
-									ImageIcon imagen = new ImageIcon("src\\recursos\\remove.png");
-									persona.add(botonEliminar(imagen, persona));
-									lista.add(persona);
-									lista.revalidate();
-									lista.repaint();
-									actualizarContPersonas(1);
-									nombre.setText("");
-									ci.setText("");
-								}//if buscarEnArchivo retorna total de registros
-								else {
-									JOptionPane.showMessageDialog(null, "Persona ya registrada.");
-								}//else retorna -1
-							} catch (IOException e) {
-								JOptionPane.showMessageDialog(null, "Ocurio un error grave: " + e.getMessage());
-							}//catch del try de posible error de disco
+								if (!telefono.getText().isEmpty())
+									Long.parseLong(telefono.getText());
+								try {
+									if (!direccion.getText().contains("@") && !direccion.getText().isEmpty()) {
+										if (buscarEnArchivo(ci.getText()) != -1) {
+											registrarUsuario(nombre.getText(), ci.getText(), telefono.getText(), direccion.getText());
+											
+											if (contadorPersonas == 0 )
+												lista.removeAll();
+												
+											JPanel persona = new JPanel(new FlowLayout());
+											JLabel nomb = new JLabel("NOMBRE: " + nombre.getText() + " - " + "C.I: " + ci.getText());
+											persona.add(nomb);
+											ImageIcon imagen = new ImageIcon("src\\recursos\\remove.png");
+											persona.add(botonEliminar(imagen, persona));
+											lista.add(persona);
+											lista.revalidate();
+											lista.repaint();
+											actualizarContPersonas(1);
+											nombre.setText("");
+											ci.setText("");
+											telefono.setText("");
+											direccion.setText("");
+										}//if buscarEnArchivo retorna total de registros
+										else {
+											JOptionPane.showMessageDialog(null, "Persona ya registrada.");
+										}//else retorna -1
+									}//if direccion no contiene "@" y no esta vacio			
+									else 
+										JOptionPane.showMessageDialog(null, "Campo de dirección no debe contener \"@\" ni estar vacio.");
+								} catch (IOException e) {
+									JOptionPane.showMessageDialog(null, "Ocurió un error grave: " + e.getMessage());
+								}//catch del try de posible error de disco
+							} catch(NumberFormatException e1) {
+								JOptionPane.showMessageDialog(null, "El telófono solo debe contener números o estar vacio.");
+							}//catch del try para validar telefono
 						} catch(NumberFormatException e) {
-							JOptionPane.showMessageDialog(null, "La cedula solo debe contener numeros.");
+							JOptionPane.showMessageDialog(null, "La cédula solo debe contener números.");
 						}//catch del try de solo numeros en cedula
 					}//if campo de cedula no esta vacio
 					else
-						JOptionPane.showMessageDialog(null, "Campo de cedula no puede estar vacio.");
+						JOptionPane.showMessageDialog(null, "Campo de cédula no puede estar vacio.");
 				}//if nombre no contiene el caracter separador
 				else {
-					if (nombre.getText().contains("#"))
-						JOptionPane.showMessageDialog(null, "No se permite el uso de \"#\" en el nombre");
+					if (nombre.getText().contains("@"))
+						JOptionPane.showMessageDialog(null, "No se permite el uso de \"@\" en el nombre");
 					else
 						JOptionPane.showMessageDialog(null, "Campo de nombre no puede estar vacio.");
 				}//cuando nombre no es valido
 			}//actionPerformed
 		};//ActionListener evento
 		return evento;
-	}//eventoContinuar
+	}//eventoContinuar(JtextField, JTextField, JTextField, JTextField)
 	
 	/** Metodo que recibe un String, si esta cadena es igual a "" se utiliza
 	 *  para devolver el total de personas registradas; si no, se utiliza para
@@ -265,7 +299,7 @@ public class Ventana extends JFrame {
 			while (entrada.hasNextLine()) {
 				String linea = entrada.nextLine();
 				if (!cadena.equals("")) {
-					String cadenas[] = linea.split("#");
+					String cadenas[] = linea.split("@");
 					if (cadenas[1].equals(cadena)) {
 						posicion = -1;
 						break;
@@ -279,24 +313,26 @@ public class Ventana extends JFrame {
 			arch.createNewFile();
 		} catch (IndexOutOfBoundsException e) {
 			entrada.close();
-			JOptionPane.showMessageDialog(null, "Ocurrio un error grave al cargar el archivo. Se recreara, por favor reinicie el programa.");
+			JOptionPane.showMessageDialog(null, "Ocurrió un error grave al cargar el archivo. Se recreará, por favor reinicie el programa.");
 			File arch = new File("src\\recursos\\listado.dat");
 			arch.delete();
 			System.exit(0);
 		}
-		
 		return posicion;
-	}//buscarEnArchivo
+	}//buscarEnArchivo(String)
 	
-	/** Metodo para registrar a un usuario recibiendo su nombre y cedula (ambos String). */
-	private void registrarUsuario (String nombre, String cedula) throws IOException {
+	/** Metodo para registrar a un usuario recibiendo su nombre, cedula, telefono(si tiene) y direccion (todo es String). */
+	private void registrarUsuario (String nombre, String cedula, String telefono, String direccion) throws IOException {
 		FileWriter fw = new FileWriter(new File("src\\recursos\\listado.dat"), true);
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter pw = new PrintWriter(bw);
 		
-		pw.println(nombre + "#" + cedula);
+		if (telefono.isEmpty())
+			telefono = " ";
+		
+		pw.println(nombre + "@" + cedula + "@" + telefono + "@" + direccion);
 		pw.close();
-	}//registrarUsuario
+	}//registrarUsuario(String, String, String, String)
 	
 	/** Metodo para crear un boton, que recibe una imagen (icono para el boton
 	 *  y un panel (donde se pondra el boton. Retorna un JButton. */
@@ -306,7 +342,7 @@ public class Ventana extends JFrame {
 		eliminarRegistro.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int aux = JOptionPane.showConfirmDialog(listado, "Esta seguro de que desea eliminar a esta persona del registro?");
+				int aux = JOptionPane.showConfirmDialog(listado, "¿Está seguro de que desea eliminar a esta persona del registro?");
 
 				if (aux == 0) {
 					aux = lista.getComponentZOrder(persona);
@@ -321,7 +357,7 @@ public class Ventana extends JFrame {
 						lista.revalidate();
 						lista.repaint();
 					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(null, "Ocurrio un error grave: " + e1.getMessage());
+						JOptionPane.showMessageDialog(null, "Ocurrió un error grave: " + e1.getMessage());
 					}
 					
 				}//si opcion == 0 significa que el usuario presiono "Si"
@@ -329,14 +365,15 @@ public class Ventana extends JFrame {
 		});//addActionListener
 		
 		return eliminarRegistro;
-	}//botonEliminar
+	}//botonEliminar(ImageIcon, JPanel)
 	
+	/** Metodo para actualizar el contador de personas y aumentarlo en 1. */
 	private void actualizarContPersonas(int num) {
 		contadorPersonas += num;
 		cantidadPersonas.setText("Personas registradas: " + contadorPersonas);
 		cantidadPersonas.revalidate();
 		cantidadPersonas.repaint();
-	}
+	}//actualizarContPersonas(int)
 	
 	/** Metodo para eliminar el registro de una persona del archivo. Recibe un entero
 	 *  que es la posicion donde se encuentra dicho registro. */
@@ -344,7 +381,7 @@ public class Ventana extends JFrame {
 		File arch = new File("src\\recursos\\listado.dat");
 		boolean renombrar = arch.renameTo(new File("src\\recursos\\listado1.dat"));
 		if (!renombrar) {
-			throw new IOException("no se pudo abrir el archivo para eliminar el registro.).");
+			throw new IOException("no se pudo abrir el archivo para eliminar el registro.");
 		}//si no se puede crear el nuevo archivo, rompo el try y mando mensaje
 		
 		arch = new File("src\\recursos\\listado1.dat");
@@ -366,6 +403,6 @@ public class Ventana extends JFrame {
 		pw.close();
 		entrada.close();
 		arch.delete();
-	}//eliminarPersonaEnArchivo
+	}//eliminarPersonaEnArchivo(int)
 		
 }//Ventana
