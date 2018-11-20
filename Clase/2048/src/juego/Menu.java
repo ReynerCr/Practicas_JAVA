@@ -1,33 +1,61 @@
 package juego;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import java.awt.Image;
 
-public class Menu extends JPanel {
-	public static Menu instancia = null;
+import utilidades.ManejaEventos;
+
+@SuppressWarnings("serial")
+public class Menu extends PanelPadre {
 	
-	private Menu() {
-		super(new BoxLayout(instancia, BoxLayout.Y_AXIS));
+	private static Menu instance = null;
+	
+	private BotonMenu nuevoJ;
+	private BotonMenu instrucciones;
+	private BotonMenu top10;
+	private BotonMenu creditos;
+	private BotonMenu salir;	
+	
+	private Menu(Image fondo) {
+		super(fondo);
 		iniciarComponentes();
 	}
 	
 	private void iniciarComponentes() {
-		//Nuevo juego; instrucciones, top 10, creditos y salir
-		//en el proyecto de aranoid esta ara cambiar el fondo entero
 		iniciarBotones();
 	}
 	
-	public Menu getInstancia() {
-		if (instancia == null) {
-			instancia = new Menu();
-		}
+	public static void newInstance(Image fondo) {
+		instance = new Menu(fondo);
+	}
+	
+	public static Menu getInstance() {
+		if (instance != null)
+			return instance;
+		else
+			return null;
+	}
+	
+	public void iniciarBotones() {
+		nuevoJ = new BotonMenu("Nuevo juego", ManejaEventos.nuevoJuego());
+		nuevoJ.setBounds((this.getWidth()/2)/2, 200, 300, 50);
 		
-		return instancia;
+		instrucciones = new BotonMenu("Instrucciones", ManejaEventos.instrucciones());
+		instrucciones.setBounds((this.getWidth()/2)/2, nuevoJ.getY() + 80, 300, 50);
+		
+		top10 = new BotonMenu("Top 10", ManejaEventos.top10());
+		top10.setBounds((this.getWidth()/2)/2, instrucciones.getY() + 80, 300, 50);
+		
+		creditos = new BotonMenu("Creditos", ManejaEventos.creditos());
+		creditos.setBounds((this.getWidth()/2)/2, top10.getY() + 80, 300, 50);
+		
+		salir = new BotonMenu("Salir", ManejaEventos.salir());
+		salir.setBounds((this.getWidth()/2)/2, creditos.getY() + 80, 300, 50);
+		
+		this.add(nuevoJ);
+		this.add(instrucciones);
+		this.add(top10);
+		this.add(creditos);
+		this.add(salir);
 	}
-	
-	private void iniciarBotones() {
-		//titulo 2048, botones para ir a un lado a otro
-	}
-	
 	
 }
