@@ -1,8 +1,8 @@
 package juego;
 
-import java.awt.Image;
-
+import utilidades.BotonMenu;
 import utilidades.ManejaEventos;
+import utilidades.PanelPadre;
 
 @SuppressWarnings("serial")
 public class Menu extends PanelPadre {
@@ -15,8 +15,7 @@ public class Menu extends PanelPadre {
 	private BotonMenu creditos;
 	private BotonMenu salir;	
 	
-	private Menu(Image fondo) {
-		super(fondo);
+	private Menu() {
 		iniciarComponentes();
 	}
 	
@@ -24,15 +23,11 @@ public class Menu extends PanelPadre {
 		iniciarBotones();
 	}
 	
-	public static void newInstance(Image fondo) {
-		instance = new Menu(fondo);
-	}
-	
 	public static Menu getInstance() {
-		if (instance != null)
-			return instance;
-		else
-			return null;
+		if (instance == null)
+			instance = new Menu();
+		
+		return instance;
 	}
 	
 	public void iniciarBotones() {
@@ -57,5 +52,4 @@ public class Menu extends PanelPadre {
 		this.add(creditos);
 		this.add(salir);
 	}
-	
 }
