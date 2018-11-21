@@ -28,19 +28,16 @@ public class BotonMenu extends JButton {
 		this.setText(texto);
 	}
 	
-	public BotonMenu(String texto, ActionListener al) {
+	public BotonMenu(String texto, int ancho, int alto, int tamanyoLetra) {
 		this(texto);
-		this.addActionListener(al);
-	}
-	
-	public BotonMenu(String texto, ActionListener al, int ancho, int alto, int tamanyoLetra) {
-		this(texto, al);
 		
 		ImageIcon icono = new ImageIcon(ImageLoader.getInstance().getBotones(0).getImage().getScaledInstance(ancho, alto, Image.SCALE_FAST)); //por defecto
 		this.setIcon(icono);
 		
-		 icono = new ImageIcon(ImageLoader.getInstance().getBotones(1).getImage().getScaledInstance(ancho, alto, Image.SCALE_FAST)); //mouse por encima
-		 this.setRolloverIcon(icono);
+		icono = new ImageIcon(ImageLoader.getInstance().getBotones(1).getImage().getScaledInstance(ancho, alto, Image.SCALE_FAST)); //mouse por encima
+		this.setRolloverIcon(icono);
 		this.setFont(new Font("Arial", Font.BOLD, tamanyoLetra));
+		
+		this.setSize(ancho, alto);
 	}
 }

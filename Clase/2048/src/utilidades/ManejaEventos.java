@@ -15,6 +15,7 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import juego.Entorno;
 import juego.Juego;
 import juego.Menu;
 
@@ -59,13 +60,15 @@ public class ManejaEventos {
 							JOptionPane.showMessageDialog(null, "Lo sentimos, el caracter \"@\" no esta permitido en el nombre.");
 						else if (cajaT.getText().length() > 8)
 							JOptionPane.showMessageDialog(null, "Nombre no puede ser mayor de 8 caracteres.");
-						else
-							iniciarJuego(cajaT.getText());
+						else {
+							actualizarFrame(new Entorno(cajaT.getText()));
+						}
 					}
 				});
 				panel.add(cajaT);
 				
-				BotonMenu volver = new BotonMenu("Volver", ManejaEventos.volverAMenu());
+				BotonMenu volver = new BotonMenu("Volver");
+				volver.addActionListener(ManejaEventos.volverAMenu());
 				volver.setBounds(30, panel.getHeight() - 150, 150, 80);
 				panel.add(volver);
 				
@@ -84,7 +87,8 @@ public class ManejaEventos {
 				PanelPadre panel = new PanelPadre();
 				
 				
-				BotonMenu volver = new BotonMenu("Volver", ManejaEventos.volverAMenu());
+				BotonMenu volver = new BotonMenu("Volver");
+				volver.addActionListener(ManejaEventos.volverAMenu());
 				volver.setBounds(30, panel.getHeight() - 150, 150, 80);
 				panel.add(volver);
 				
@@ -155,7 +159,8 @@ public class ManejaEventos {
 					}//catch
 				}//catch
 				
-				BotonMenu volver = new BotonMenu("Volver", ManejaEventos.volverAMenu());
+				BotonMenu volver = new BotonMenu("Volver");
+				volver.addActionListener(ManejaEventos.volverAMenu());
 				volver.setBounds(30, panel.getHeight() - 150, 150, 80);
 				panel.add(volver);
 				
@@ -186,7 +191,8 @@ public class ManejaEventos {
 				etiqueta.setLocation((panel.getWidth()/2)/2, 500);
 				panel.add(etiqueta);
 				
-				BotonMenu volver = new BotonMenu("Volver", ManejaEventos.volverAMenu());
+				BotonMenu volver = new BotonMenu("Volver");
+				volver.addActionListener(ManejaEventos.volverAMenu());
 				volver.setBounds(30, panel.getHeight() - 150, 150, 80);
 				panel.add(volver);
 				
@@ -208,11 +214,6 @@ public class ManejaEventos {
 		return al;
 	}//
 
-	private static void iniciarJuego(String nombre) {
-		
-	}
-
-	
 	public static void actualizarFrame(PanelPadre panel) {
 		Juego.getInstance().setContentPane(panel);
 		Juego.getInstance().revalidate();
