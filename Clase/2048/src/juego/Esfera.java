@@ -13,21 +13,23 @@ public class Esfera extends JLabel {
 	public Esfera(int valor) {
 		this.valor = valor;
 		setValor(valor);
+		this.setSize(this.getIcon().getIconWidth(), this.getIcon().getIconHeight());
 	}//
 
 	public void setValor(int valor) {
 		valor = redondear(valor);
 		this.valor = valor;
+		
 		int i = 0;
-		
-		//tambien se pudo haber trabajado con dos elevado a x, pero para validaciones prefiero que sea asi
-		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i) != valor)
+		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i) != valor) {
 			i++;
-		
+		}
 		i--;
+		
 		this.setIcon(ImageLoader.getInstance().getEsfera(i));
-		if (i>=9)
-			i /= 2;
+		if (i >= ImageLoader.MAX_CONECTORES)
+			i -= 8;
+		
 		conector = ImageLoader.getInstance().getConectores(i);
 	}
 	

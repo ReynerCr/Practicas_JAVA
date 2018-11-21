@@ -9,6 +9,7 @@ public class ImageLoader {
 	private static ImageLoader instance = null;
 	
 	public static final int MAX_ESFERAS = 16;
+	public static final int MAX_CONECTORES = 8;
 	
 	private Image background;
 	private ImageIcon etiquetas;
