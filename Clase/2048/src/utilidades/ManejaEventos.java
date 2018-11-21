@@ -15,7 +15,7 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import juego.Entorno;
+import juego.EntornoJuego;
 import juego.Juego;
 import juego.Menu;
 
@@ -61,7 +61,7 @@ public class ManejaEventos {
 						else if (cajaT.getText().length() > 8)
 							JOptionPane.showMessageDialog(null, "Nombre no puede ser mayor de 8 caracteres.");
 						else {
-							actualizarFrame(new Entorno(cajaT.getText()));
+							actualizarFrame(new EntornoJuego(cajaT.getText()));
 						}
 					}
 				});

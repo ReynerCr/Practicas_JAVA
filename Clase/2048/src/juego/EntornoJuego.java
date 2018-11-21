@@ -15,14 +15,14 @@ import utilidades.PanelPadre;
 import utilidades.Tiempo;
 
 @SuppressWarnings("serial")
-public class Entorno extends PanelPadre {
+public class EntornoJuego extends PanelPadre {
 	private static long puntaje = 0;
 	private String nombre;
 	private Tiempo tiempo;
 	private  static EtiquetaPersonalizada ePuntaje;
 	private JButton pausar;
 	
-	public Entorno(String nombre) {
+	public EntornoJuego(String nombre) {
 		this.nombre = nombre;
 		this.setLayout(new BorderLayout());
 
@@ -77,8 +77,8 @@ public class Entorno extends PanelPadre {
 	}
 	
 	public static void actualizarPuntaje(long puntaje) {
-		Entorno.puntaje += puntaje;
-		Entorno.ePuntaje.setText(Long.toString(Entorno.puntaje));
+		EntornoJuego.puntaje += puntaje;
+		EntornoJuego.ePuntaje.setText(Long.toString(EntornoJuego.puntaje));
 	}
 	
 	private void iniciarParteInferior() {

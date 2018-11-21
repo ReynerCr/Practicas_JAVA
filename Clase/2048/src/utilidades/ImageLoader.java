@@ -31,7 +31,7 @@ public class ImageLoader {
 			esferas[i] = new ImageIcon(url.getPath() + i + ".png");
 		}
 		
-		url = this.getClass().getResource("recursos/imagenes/esferas/");
+		url = this.getClass().getResource("recursos/imagenes/lineas/");
 		conectores = new ImageIcon[8];
 		for (int i = 0; i < 8; i++)
 			conectores[i] = new ImageIcon(url.getPath() + i + ".png");

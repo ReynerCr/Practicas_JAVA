@@ -1,6 +1,5 @@
 package juego;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import utilidades.ImageLoader;
@@ -8,8 +7,10 @@ import utilidades.ImageLoader;
 @SuppressWarnings("serial")
 public class Esfera extends JLabel {
 	private int valor;
-	private ImageIcon conector;
+	private Conector conector;
 	private boolean activo;
+	private int x;
+	private int y;
 	
 	public Esfera(int valor) {
 		this.valor = valor;
@@ -32,14 +33,14 @@ public class Esfera extends JLabel {
 		if (i >= ImageLoader.MAX_CONECTORES)
 			i -= 8;
 		
-		conector = ImageLoader.getInstance().getConectores(i);
+		conector = new Conector(ImageLoader.getInstance().getConectores(i));
 	}
 	
 	public int getValor() {
 		return valor;
 	}
 	
-	public ImageIcon getConector() {
+	public Conector getConector() {
 		return conector;
 	}
 	
@@ -49,6 +50,22 @@ public class Esfera extends JLabel {
 	
 	public boolean getActivo() {
 		return activo;
+	}
+	
+	public int getX() {
+		return x;
+	}
+	
+	public int getY() {
+		return y;
+	}
+	
+	public void setX(int x) {
+		this.x = x;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
 	}
 	
 	private int redondear(int valor) {
