@@ -16,11 +16,11 @@ import utilidades.Tiempo;
 
 @SuppressWarnings("serial")
 public class Entorno extends PanelPadre {
-	private long puntaje = 0;
+	private static long puntaje = 0;
 	private String nombre;
 	private Tiempo tiempo;
-	EtiquetaPersonalizada ePuntaje;
-	JButton pausar;
+	private  static EtiquetaPersonalizada ePuntaje;
+	private JButton pausar;
 	
 	public Entorno(String nombre) {
 		this.nombre = nombre;
@@ -43,7 +43,7 @@ public class Entorno extends PanelPadre {
 		
 		ePuntaje = new EtiquetaPersonalizada(Long.toString(puntaje), 200, 80, 18);
 		parteSuperior.add(ePuntaje);
-		
+
 		pausar = new JButton(ImageLoader.getInstance().getOtros(4));
 		pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
 		pausar.setBorderPainted(false);
@@ -74,6 +74,11 @@ public class Entorno extends PanelPadre {
 		Tablero tablero = new Tablero();
 		
 		this.add(tablero, BorderLayout.CENTER);
+	}
+	
+	public static void actualizarPuntaje(long puntaje) {
+		Entorno.puntaje += puntaje;
+		Entorno.ePuntaje.setText(Long.toString(Entorno.puntaje));
 	}
 	
 	private void iniciarParteInferior() {

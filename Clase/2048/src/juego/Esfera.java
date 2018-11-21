@@ -9,11 +9,13 @@ import utilidades.ImageLoader;
 public class Esfera extends JLabel {
 	private int valor;
 	private ImageIcon conector;
+	private boolean activo;
 	
 	public Esfera(int valor) {
 		this.valor = valor;
 		setValor(valor);
 		this.setSize(this.getIcon().getIconWidth(), this.getIcon().getIconHeight());
+		activo = false;
 	}//
 
 	public void setValor(int valor) {
@@ -39,6 +41,14 @@ public class Esfera extends JLabel {
 	
 	public ImageIcon getConector() {
 		return conector;
+	}
+	
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
+	
+	public boolean getActivo() {
+		return activo;
 	}
 	
 	private int redondear(int valor) {
