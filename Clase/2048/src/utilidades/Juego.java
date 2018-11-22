@@ -1,5 +1,8 @@
 package utilidades;
-
+import javax.swing.ImageIcon;
+//Autores: Reyner Contreras, seccion 01
+//		   John Llanes, seccion 04
+//Programacion I.
 import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
@@ -12,6 +15,7 @@ public class Juego extends JFrame {
 		this.setResizable(false);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
+		this.setIconImage(new ImageIcon(this.getClass().getResource("recursos/icon.png")).getImage());
 		
 		iniciarComponentes();
 	}

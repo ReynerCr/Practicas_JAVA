@@ -127,6 +127,7 @@ public class Tablero extends JPanel {
 									esferas[i][j] = null;
 									esferas[i][j] = new Esfera((int) (Math.random() * aux));
 									esferas[i][j].setLocation(x, y);
+									esferas[i][j].addMouseListener(eventoEsferas(i, j));
 									add(esferas[i][j]);
 								}//if
 							}//for
@@ -150,6 +151,7 @@ public class Tablero extends JPanel {
 				}
 			}
 		};
+		
 		return ml;
 	}//eventoEsferas
 	

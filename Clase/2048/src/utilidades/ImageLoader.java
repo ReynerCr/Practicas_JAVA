@@ -39,8 +39,8 @@ public class ImageLoader {
 			
 		
 		url = this.getClass().getResource("recursos/imagenes/otros/");
-		otros = new ImageIcon[6];
-		for (int i = 0; i < 6; i++)
+		otros = new ImageIcon[10];
+		for (int i = 0; i < 10; i++)
 			otros[i] = new ImageIcon(url.getPath() + i + ".png");
 		
 		

@@ -21,11 +21,13 @@ public class EntornoJuego extends PanelPadre {
 	private static String nombre;
 	private static EtiquetaPersonalizada ePuntaje;
 	private JButton pausar;
+	private JButton reiniciar;
+	private JButton volver;
+	Tablero tablero;
 	
 	public EntornoJuego(String nombre) {
 		EntornoJuego.nombre = nombre;
 		this.setLayout(new BorderLayout());
-
 		iniciarComponentes();
 	}
 	
@@ -57,7 +59,7 @@ public class EntornoJuego extends PanelPadre {
 					pausar.setIcon(ImageLoader.getInstance().getOtros(5));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(3));
 				}
-					
+				
 				else {
 					Tiempo.getInstance().iniciarTiempo();
 					pausar.setIcon(ImageLoader.getInstance().getOtros(4));
@@ -71,8 +73,7 @@ public class EntornoJuego extends PanelPadre {
 	}
 	
 	private void iniciarTablero() {
-		Tablero tablero = new Tablero();
-		
+		tablero = new Tablero();
 		this.add(tablero, BorderLayout.CENTER);
 	}
 	
@@ -104,6 +105,36 @@ public class EntornoJuego extends PanelPadre {
 	private void iniciarParteInferior() {
 		JPanel parteInferior = new JPanel(new FlowLayout());
 		parteInferior.setOpaque(false);
+		
+		volver = new JButton(ImageLoader.getInstance().getOtros(6));
+		volver.setSize(volver.getIcon().getIconWidth(), volver.getIcon().getIconHeight());
+		volver.setRolloverIcon(ImageLoader.getInstance().getOtros(8));
+		volver.setContentAreaFilled(false);
+		volver.setBorderPainted(false);
+		volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ManejaEventos.actualizarFrame(Menu.getInstance());
+			}
+		});
+		parteInferior.add(volver);
+		
+		reiniciar = new JButton(ImageLoader.getInstance().getOtros(7));
+		reiniciar.setRolloverIcon(ImageLoader.getInstance().getOtros(9));
+		reiniciar.setSize(reiniciar.getIcon().getIconWidth(), reiniciar.getIcon().getIconHeight());
+		reiniciar.setContentAreaFilled(false);
+		reiniciar.setBorderPainted(false);
+		reiniciar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				remove(tablero);
+				iniciarTablero();
+				revalidate();
+				repaint();
+			}
+		});
+		parteInferior.add(reiniciar);
+		
 		this.add(parteInferior, BorderLayout.PAGE_END);
 	}
 

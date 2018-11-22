@@ -225,7 +225,4 @@ public class ManejaEventos {
 		Juego.getInstance().repaint();
 	}
 	
-	public static void anyadirATop10() {
-		
-	}
 }
