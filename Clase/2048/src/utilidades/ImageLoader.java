@@ -9,7 +9,7 @@ public class ImageLoader {
 	private static ImageLoader instance = null;
 	
 	public static final int MAX_ESFERAS = 16;
-	public static final int MAX_CONECTORES = 8;
+	public static final int MAX_CONECTORES = 31;
 	
 	private Image background;
 	private ImageIcon etiquetas;
@@ -32,9 +32,11 @@ public class ImageLoader {
 		}
 		
 		url = this.getClass().getResource("recursos/imagenes/lineas/");
-		conectores = new ImageIcon[8];
-		for (int i = 0; i < 8; i++)
+		conectores = new ImageIcon[MAX_CONECTORES];
+		for (int i = 0; i < MAX_CONECTORES; i++) {
 			conectores[i] = new ImageIcon(url.getPath() + i + ".png");
+		}
+			
 		
 		url = this.getClass().getResource("recursos/imagenes/otros/");
 		otros = new ImageIcon[6];

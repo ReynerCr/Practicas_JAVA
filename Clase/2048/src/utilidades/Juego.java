@@ -1,4 +1,4 @@
-package juego;
+package utilidades;
 
 import javax.swing.JFrame;
 

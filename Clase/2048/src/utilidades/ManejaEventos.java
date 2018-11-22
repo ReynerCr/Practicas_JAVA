@@ -15,11 +15,9 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import juego.EntornoJuego;
-import juego.Juego;
-import juego.Menu;
-
 public class ManejaEventos {
+	private static String ruta;
+	
 	public static ActionListener volverAMenu() {
 		ActionListener al = new ActionListener() {
 			@Override
@@ -30,6 +28,10 @@ public class ManejaEventos {
 		
 		return al;
 	}//
+	
+	public static String getRuta() {
+		return ruta;
+	}
 	
 	public static ActionListener nuevoJuego() {
 		ActionListener al = new ActionListener() {
@@ -71,6 +73,9 @@ public class ManejaEventos {
 				volver.addActionListener(ManejaEventos.volverAMenu());
 				volver.setBounds(30, panel.getHeight() - 150, 150, 80);
 				panel.add(volver);
+				
+				ruta = this.getClass().getResource("recursos/").getPath();
+				ruta = ruta + "top10.dat";
 				
 				Juego.getInstance().setContentPane(panel);
 				actualizarFrame(panel);
@@ -218,5 +223,9 @@ public class ManejaEventos {
 		Juego.getInstance().setContentPane(panel);
 		Juego.getInstance().revalidate();
 		Juego.getInstance().repaint();
+	}
+	
+	public static void anyadirATop10() {
+		
 	}
 }

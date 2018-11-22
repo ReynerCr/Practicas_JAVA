@@ -1,29 +1,29 @@
-package juego;
+package utilidades;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import utilidades.EtiquetaPersonalizada;
-import utilidades.ImageLoader;
-import utilidades.PanelPadre;
-import utilidades.Tiempo;
 
 @SuppressWarnings("serial")
 public class EntornoJuego extends PanelPadre {
 	private static long puntaje = 0;
-	private String nombre;
-	private Tiempo tiempo;
-	private  static EtiquetaPersonalizada ePuntaje;
+	private static String nombre;
+	private static EtiquetaPersonalizada ePuntaje;
 	private JButton pausar;
 	
 	public EntornoJuego(String nombre) {
-		this.nombre = nombre;
+		EntornoJuego.nombre = nombre;
 		this.setLayout(new BorderLayout());
 
 		iniciarComponentes();
@@ -33,13 +33,13 @@ public class EntornoJuego extends PanelPadre {
 		inciarParteSuperior();
 		iniciarTablero();
 		iniciarParteInferior();
+		Tiempo.getInstance().iniciarTiempo();
 	}
 
 	private void inciarParteSuperior() {
 		JPanel parteSuperior = new JPanel(new FlowLayout());
 		parteSuperior.setOpaque(false);
-		tiempo = new Tiempo();
-		parteSuperior.add(tiempo);
+		parteSuperior.add(Tiempo.getInstance());
 		
 		ePuntaje = new EtiquetaPersonalizada(Long.toString(puntaje), 200, 80, 18);
 		parteSuperior.add(ePuntaje);
@@ -52,14 +52,14 @@ public class EntornoJuego extends PanelPadre {
 		pausar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (tiempo.getActivo()) {
-					tiempo.pararTiempo();
+				if (Tiempo.getInstance().getActivo()) {
+					Tiempo.getInstance().pararTiempo();
 					pausar.setIcon(ImageLoader.getInstance().getOtros(5));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(3));
 				}
 					
 				else {
-					tiempo.iniciarTiempo();
+					Tiempo.getInstance().iniciarTiempo();
 					pausar.setIcon(ImageLoader.getInstance().getOtros(4));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
 				}
@@ -79,6 +79,26 @@ public class EntornoJuego extends PanelPadre {
 	public static void actualizarPuntaje(long puntaje) {
 		EntornoJuego.puntaje += puntaje;
 		EntornoJuego.ePuntaje.setText(Long.toString(EntornoJuego.puntaje));
+	}
+	
+	public static void finDeJuego() {
+		JOptionPane.showMessageDialog(null, nombre + "tu puntaje es de: " + puntaje + " y el tiempo total: " + Tiempo.getInstance().getTiempo());
+		Tiempo.getInstance().pararTiempo();
+		
+		try {
+			String dir = ManejaEventos.getRuta();
+			FileWriter fw = new FileWriter(new File(dir));
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter pw = new PrintWriter(bw, true);
+			
+			pw.print(nombre + "@" + puntaje);
+			
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		ManejaEventos.volverAMenu();
 	}
 	
 	private void iniciarParteInferior() {

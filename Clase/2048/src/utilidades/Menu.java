@@ -1,8 +1,4 @@
-package juego;
-
-import utilidades.BotonMenu;
-import utilidades.ManejaEventos;
-import utilidades.PanelPadre;
+package utilidades;
 
 @SuppressWarnings("serial")
 public class Menu extends PanelPadre {
