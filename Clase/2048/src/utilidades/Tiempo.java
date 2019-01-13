@@ -18,9 +18,7 @@ public class Tiempo extends JLabel {
 	private static Tiempo instance = null;
 	
 	private Tiempo() {
-		minutos = 0;
-		segundos = 0;
-		activo = true;
+		iniciar();
 		timer = new Timer(1000, new TimerTiempo());
 		
 		this.setSize(80, 80);
@@ -37,6 +35,14 @@ public class Tiempo extends JLabel {
 			instance = new Tiempo();
 		
 		return instance;
+	}
+	
+	public void iniciar() {
+		minutos = 0;
+		segundos = 0;
+		activo = true;
+		if (timer != null)
+			timer.restart();
 	}
 	
 	public void pararTiempo() {

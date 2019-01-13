@@ -22,6 +22,7 @@ public class EntornoJuego extends PanelPadre {
 	private static EtiquetaPersonalizada ePuntaje;
 	private JButton pausar;
 	private JButton reiniciar;
+	
 	private JButton volver;
 	Tablero tablero;
 	
@@ -32,10 +33,11 @@ public class EntornoJuego extends PanelPadre {
 	}
 	
 	private void iniciarComponentes() {
+		Tiempo.getInstance().iniciar();
+		Tiempo.getInstance().iniciarTiempo();
 		inciarParteSuperior();
 		iniciarTablero();
 		iniciarParteInferior();
-		Tiempo.getInstance().iniciarTiempo();
 	}
 
 	private void inciarParteSuperior() {
@@ -76,6 +78,8 @@ public class EntornoJuego extends PanelPadre {
 		tablero = new Tablero();
 		this.add(tablero, BorderLayout.CENTER);
 	}
+	//TODO reiniciar tiempo y puntaje cuando se vaya a menu y al reiniciar; al volver a menu pide nombre de nuevo
+	//TODO reordenar los puntajes para que queden de mayor a menor
 	
 	public static void actualizarPuntaje(long puntaje) {
 		EntornoJuego.puntaje += puntaje;
@@ -127,8 +131,12 @@ public class EntornoJuego extends PanelPadre {
 		reiniciar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				Tiempo.getInstance().iniciar();
 				remove(tablero);
 				iniciarTablero();
+				puntaje = 0;
+				ePuntaje.setText(Long.toString(puntaje));
+				
 				revalidate();
 				repaint();
 			}
