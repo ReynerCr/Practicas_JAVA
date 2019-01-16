@@ -32,4 +32,10 @@ public class Juego extends JFrame {
 		
 		return instance;
 	}
+	
+	public void actualizarFrame(PanelPadre panel) {
+		Juego.getInstance().setContentPane(panel);
+		Juego.getInstance().revalidate();
+		Juego.getInstance().repaint();
+	}
 }

@@ -15,9 +15,7 @@ public class Tiempo extends JLabel {
 	private Timer timer;
 	private boolean activo;
 	
-	private static Tiempo instance = null;
-	
-	private Tiempo() {
+	public Tiempo() {
 		iniciar();
 		timer = new Timer(1000, new TimerTiempo());
 		
@@ -28,13 +26,6 @@ public class Tiempo extends JLabel {
 		this.setIcon(ImageLoader.getInstance().getOtros(1));
 		
 		timer.start();
-	}
-	
-	public static Tiempo getInstance() {
-		if(instance==null)
-			instance = new Tiempo();
-		
-		return instance;
 	}
 	
 	public void iniciar() {

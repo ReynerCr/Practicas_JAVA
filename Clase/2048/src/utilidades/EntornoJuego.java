@@ -17,33 +17,47 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class EntornoJuego extends PanelPadre {
-	private static long puntaje = 0;
-	private static String nombre;
-	private static EtiquetaPersonalizada ePuntaje;
+	private static EntornoJuego instance = null;
+	
+	private long puntaje = 0;
+	private String nombre;
+	private EtiquetaPersonalizada ePuntaje;
 	private JButton pausar;
 	private JButton reiniciar;
+	private Tiempo time;
 	
 	private JButton volver;
 	Tablero tablero;
 	
-	public EntornoJuego(String nombre) {
-		EntornoJuego.nombre = nombre;
+	private EntornoJuego() {
 		this.setLayout(new BorderLayout());
 		iniciarComponentes();
 	}
 	
 	private void iniciarComponentes() {
-		Tiempo.getInstance().iniciar();
-		Tiempo.getInstance().iniciarTiempo();
+		time = new Tiempo();
+		time.iniciar();
+		time.iniciarTiempo();
 		inciarParteSuperior();
 		iniciarTablero();
 		iniciarParteInferior();
+	}
+	
+	void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	
+	public static EntornoJuego getInstance() {
+		if (instance == null)
+			instance = new EntornoJuego();
+		
+		return instance;
 	}
 
 	private void inciarParteSuperior() {
 		JPanel parteSuperior = new JPanel(new FlowLayout());
 		parteSuperior.setOpaque(false);
-		parteSuperior.add(Tiempo.getInstance());
+		parteSuperior.add(time);
 		
 		ePuntaje = new EtiquetaPersonalizada(Long.toString(puntaje), 200, 80, 18);
 		parteSuperior.add(ePuntaje);
@@ -56,14 +70,14 @@ public class EntornoJuego extends PanelPadre {
 		pausar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (Tiempo.getInstance().getActivo()) {
-					Tiempo.getInstance().pararTiempo();
+				if (time.getActivo()) {
+					time.pararTiempo();
 					pausar.setIcon(ImageLoader.getInstance().getOtros(5));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(3));
 				}
 				
 				else {
-					Tiempo.getInstance().iniciarTiempo();
+					time.iniciarTiempo();
 					pausar.setIcon(ImageLoader.getInstance().getOtros(4));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
 				}
@@ -78,32 +92,30 @@ public class EntornoJuego extends PanelPadre {
 		tablero = new Tablero();
 		this.add(tablero, BorderLayout.CENTER);
 	}
-	//TODO reiniciar tiempo y puntaje cuando se vaya a menu y al reiniciar; al volver a menu pide nombre de nuevo
-	//TODO reordenar los puntajes para que queden de mayor a menor
 	
-	public static void actualizarPuntaje(long puntaje) {
-		EntornoJuego.puntaje += puntaje;
-		EntornoJuego.ePuntaje.setText(Long.toString(EntornoJuego.puntaje));
+	void actualizarPuntaje(long puntaje) {
+		this.puntaje += puntaje;
+		ePuntaje.setText(Long.toString(this.puntaje));
 	}
 	
-	public static void finDeJuego() {
-		JOptionPane.showMessageDialog(null, nombre + "tu puntaje es de: " + puntaje + " y el tiempo total: " + Tiempo.getInstance().getTiempo());
-		Tiempo.getInstance().pararTiempo();
+	void finDeJuego() {
+		JOptionPane.showMessageDialog(null, nombre + "tu puntaje es de: " + puntaje + " y el tiempo total: " + time.getTiempo());
+		time.pararTiempo();
 		
 		try {
-			String dir = ManejaEventos.getRuta();
-			FileWriter fw = new FileWriter(new File(dir));
+			String dir = this.getClass().getResource("recursos/").getPath() + "top10.dat";
+			FileWriter fw = new FileWriter(new File(dir), true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			PrintWriter pw = new PrintWriter(bw, true);
+			PrintWriter pw = new PrintWriter(bw);
 			
-			pw.print(nombre + "@" + puntaje);
+			pw.println(nombre + "@" + puntaje);
 			
 			pw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		ManejaEventos.volverAMenu();
+		Juego.getInstance().actualizarFrame(Menu.getInstance());
 	}
 	
 	private void iniciarParteInferior() {
@@ -118,7 +130,14 @@ public class EntornoJuego extends PanelPadre {
 		volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ManejaEventos.actualizarFrame(Menu.getInstance());
+				time.iniciar();
+				time.pararTiempo();
+				time.setText(time.getTiempo());
+				
+				puntaje = 0;
+				ePuntaje.setText(Long.toString(puntaje));
+				
+				Juego.getInstance().actualizarFrame(Menu.getInstance());
 			}
 		});
 		parteInferior.add(volver);
@@ -131,9 +150,19 @@ public class EntornoJuego extends PanelPadre {
 		reiniciar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Tiempo.getInstance().iniciar();
 				remove(tablero);
 				iniciarTablero();
+				
+				boolean condicion = false;
+				if (time.getActivo()) {
+					condicion = true;
+				}
+				time.iniciar();
+				time.setText(time.getTiempo());
+				
+				if(!condicion)
+					time.pararTiempo();
+				
 				puntaje = 0;
 				ePuntaje.setText(Long.toString(puntaje));
 				
@@ -145,6 +174,9 @@ public class EntornoJuego extends PanelPadre {
 		
 		this.add(parteInferior, BorderLayout.PAGE_END);
 	}
-
 	
+	public Tiempo getTime() {
+		return time;
+	}
+
 }

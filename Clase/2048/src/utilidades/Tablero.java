@@ -45,12 +45,12 @@ public class Tablero extends JPanel {
 		}//for i
 		
 	}//iniciarEsferas()
-	
+	//TODO embellecer este evento; en teoria funciona bien pero esta mal organizado creo yo
 	private MouseListener eventoEsferas(int i, int j) {
 		MouseListener ml = new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if (Tiempo.getInstance().getActivo()) {
+				if (EntornoJuego.getInstance().getTime().getActivo()) {
 					esfNum = -1;
 					sumatoriaValores = 0;
 					esferas[i][j].setActivo(false);
@@ -72,7 +72,7 @@ public class Tablero extends JPanel {
 							esfLista = null;
 						}
 					}//if mi esfera actual es la misma que la anterior de la lista
-					else if (!(esferas[i][j].getActivo())) {//TODO aqui hay un pelon 
+					else if (!(esferas[i][j].getActivo())) {
 						if  (esferas[i][j].getValor() == sumatoriaValores || (esfNum > 0 && esfLista[esfNum].getValor() == esferas[i][j].getValor())) {
 							int direccion = retornarDireccion(i, j);
 							if (direccion != 0) {
@@ -82,20 +82,21 @@ public class Tablero extends JPanel {
 								esfLista[esfNum] = esferas[i][j];
 								//anyadirConector(direccion);
 							}
-							//TODO CONECTOR SE COLOCA MAL Y SE ROTA MAL
 						}//if
 					}//else if 
 					revalidate();
 					repaint();
-				}//if sesferasCargadas mayor o igual a cero
+				}//if esferasCargadas mayor o igual a cero
 			}//mouseEntered
 			@Override
+			
 			public void mouseExited(MouseEvent e) {
-				
+				//aqui va que se quite el "conector" de esa esfera si es que la tenia
 			}
+			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (Tiempo.getInstance().getActivo()) {
+				if (EntornoJuego.getInstance().getTime().getActivo()) {
 					esfLista = new Esfera[35];
 					//conectores = new Conector[35];
 					
@@ -132,10 +133,10 @@ public class Tablero extends JPanel {
 								}//if
 							}//for
 						}//for
-						EntornoJuego.actualizarPuntaje(sumatoriaValores);
+						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
 						
-						if (!hayJugadasDisponibles()) {
-							EntornoJuego.finDeJuego();
+						if (hayJugadasDisponibles()) {
+							EntornoJuego.getInstance().finDeJuego();
 						}
 						
 						revalidate();
