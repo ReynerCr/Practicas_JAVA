@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -99,16 +100,53 @@ public class EntornoJuego extends PanelPadre {
 	}
 	
 	void finDeJuego() {
-		JOptionPane.showMessageDialog(null, nombre + "tu puntaje es de: " + puntaje + " y el tiempo total: " + time.getTiempo());
 		time.pararTiempo();
+		JOptionPane.showMessageDialog(null, nombre + " tu puntaje es de: " + puntaje + " y el tiempo total: " + time.getTiempo());
 		
+		String dir = this.getClass().getResource("recursos/").getPath() + "top10.dat";
+		String datos[][] = new String[10][2];
+		int i = 0, j = 0;
 		try {
-			String dir = this.getClass().getResource("recursos/").getPath() + "top10.dat";
-			FileWriter fw = new FileWriter(new File(dir), true);
+			try {
+				Scanner entrada = new Scanner(new File(dir));
+				
+				while (entrada.hasNextLine() && i<10) {
+					String cad[] = entrada.nextLine().split("@");
+					if (puntaje >= Long.parseLong(cad[1])) {
+						datos[i][0] = nombre;
+						datos[i][1] = Long.toString(puntaje);
+						puntaje = 0;
+						if (i < 10) {
+							i++;
+							datos[i][0] = cad[0];
+							datos[i][1] = cad[1];
+						}
+					}
+					else {
+						datos[i][0] = cad[0];
+						datos[i][1] = cad[1];
+					}
+					i++;
+				}//while
+				
+				if (puntaje != 0 && i < 10) {
+					datos[i][0] = nombre;
+					datos[i][1] = Long.toString(puntaje);
+				}
+				
+				entrada.close();
+			} catch (IOException e1) {
+				datos[j][0] = nombre;
+				datos[j][1] = Long.toString(puntaje);
+			}
+			
+			FileWriter fw = new FileWriter(new File(dir));
 			BufferedWriter bw = new BufferedWriter(fw);
 			PrintWriter pw = new PrintWriter(bw);
 			
-			pw.println(nombre + "@" + puntaje);
+			for (j = 0; j < i; j++) {
+				pw.println(datos[j][0] + "@" + datos[j][1]);
+			}//for
 			
 			pw.close();
 		} catch (IOException e) {
@@ -116,6 +154,7 @@ public class EntornoJuego extends PanelPadre {
 		}
 		
 		Juego.getInstance().actualizarFrame(Menu.getInstance());
+		puntaje = 0;
 	}
 	
 	private void iniciarParteInferior() {
@@ -152,31 +191,27 @@ public class EntornoJuego extends PanelPadre {
 			public void actionPerformed(ActionEvent arg0) {
 				remove(tablero);
 				iniciarTablero();
-				
-				boolean condicion = false;
-				if (time.getActivo()) {
-					condicion = true;
-				}
-				time.iniciar();
-				time.setText(time.getTiempo());
-				
-				if(!condicion)
-					time.pararTiempo();
-				
-				puntaje = 0;
-				ePuntaje.setText(Long.toString(puntaje));
-				
+				reiniciar();
 				revalidate();
 				repaint();
 			}
 		});
 		parteInferior.add(reiniciar);
-		
 		this.add(parteInferior, BorderLayout.PAGE_END);
 	}
 	
-	public Tiempo getTime() {
+	Tiempo getTime() {
 		return time;
 	}
-
+	
+	void reiniciar() {
+		puntaje = 0;
+		ePuntaje.setText(Long.toString(puntaje));
+		
+		pausar.setIcon(ImageLoader.getInstance().getOtros(4));
+		pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
+		
+		time.iniciar();
+		time.setText(time.getTiempo());
+	}
 }

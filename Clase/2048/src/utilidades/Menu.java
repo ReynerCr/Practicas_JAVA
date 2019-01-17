@@ -96,9 +96,9 @@ public class Menu extends PanelPadre {
 						else if (cajaT.getText().length() > 8)
 							JOptionPane.showMessageDialog(null, "Nombre no puede ser mayor de 8 caracteres.");
 						else {
-							Juego.getInstance().actualizarFrame(EntornoJuego.getInstance());
-							EntornoJuego.getInstance().getTime().iniciar();
 							EntornoJuego.getInstance().setNombre(cajaT.getText());
+							EntornoJuego.getInstance().reiniciar();
+							Juego.getInstance().actualizarFrame(EntornoJuego.getInstance());
 						}
 					}
 				};
@@ -146,7 +146,7 @@ public class Menu extends PanelPadre {
 		this.add(instrucciones);
 	}
 	
-	private void bTop10() { //TODO mostrar ordenado de mayor a menor
+	private void bTop10() {
 		ActionListener al = new ActionListener() {
 			@SuppressWarnings("resource")
 			@Override
@@ -168,7 +168,7 @@ public class Menu extends PanelPadre {
 						etiqueticas[i].setLocation(30, 190 + (i*40));
 						panel.add(etiqueticas[i]);
 						i++;
-					}//while
+					}//while para leer los datos y mostrarlos
 					
 					if (i == 0) 
 						throw new FileNotFoundException(); //reutilizo codigo en caso de que nadie haya jugado y terminado
@@ -178,7 +178,7 @@ public class Menu extends PanelPadre {
 					etiqueticas[0] = new EtiquetaPersonalizada("No hay registros de jugadores.", 540, 50, 18);
 					etiqueticas[0].setLocation(30, 320);
 					panel.add(etiqueticas[0]);
-				} catch (NumberFormatException e1) {
+				} catch (NumberFormatException e1) { //rehago el archivo y guardo una copia del archivo viejo 
 					JOptionPane.showMessageDialog(null, "El archivo esta corrupto, se creara una copia en el directorio y se borrara el original.");
 					entrada.close();
 					try {

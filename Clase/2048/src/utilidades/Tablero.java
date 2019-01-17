@@ -114,6 +114,7 @@ public class Tablero extends JPanel {
 					if (esfNum > 0) {
 						esfLista[esfNum].setValor(sumatoriaValores);
 						esfLista[esfNum].setActivo(false);
+						EntornoJuego.getInstance().actualizarPuntaje(esfLista[esfNum].getValor());
 						
 						int aux = 0;
 						for (int i = 0; i < 7; i++) {
@@ -133,9 +134,8 @@ public class Tablero extends JPanel {
 								}//if
 							}//for
 						}//for
-						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
 						
-						if (hayJugadasDisponibles()) {
+						if (!hayJugadasDisponibles()) {
 							EntornoJuego.getInstance().finDeJuego();
 						}
 						
