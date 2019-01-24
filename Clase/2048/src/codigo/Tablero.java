@@ -38,9 +38,8 @@ public class Tablero extends JPanel {
 				int aux = (int) (Math.random() * 8) + 1;
 				esferas[i][j] = new Esfera(aux);
 				esferas[i][j].setLocation(x, y);
-				esferas[i][j].setI(i);
-				esferas[i][j].setJ(j);
 				esferas[i][j].addMouseListener(eventoEsferas(i, j));
+				
 			}//for j
 		}//for i
 		
@@ -56,7 +55,8 @@ public class Tablero extends JPanel {
 					esferas[i][j].setActivo(false);
 					esfLista = null;
 				}
-			}
+			}//mouseClicked
+			
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				if (esfNum >= 0) {
@@ -92,7 +92,7 @@ public class Tablero extends JPanel {
 			
 			public void mouseExited(MouseEvent e) {
 				//aqui va que se quite el "conector" de esa esfera si es que la tenia
-			}
+			}//mouseExited
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -107,7 +107,8 @@ public class Tablero extends JPanel {
 				}
 				
 				//TODO aqui sonido de inicio
-			}
+			}//mousePressed
+			
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (esfNum >= 0) {
@@ -115,27 +116,44 @@ public class Tablero extends JPanel {
 						esfLista[esfNum].setValor(sumatoriaValores);
 						esfLista[esfNum].setActivo(false);
 						
-						int aux = 0;
 						for (int i = 0; i < 7; i++) {
 							for (int j = 0; j < 5; j++) {
-								if (esferas[i][j].getValor() > aux)
-									aux = esferas[i][j].getValor();
 								if(esferas[i][j].getActivo()) {
-									int x = esferas[i][j].getX();
-									int y = esferas[i][j].getY();
 									remove(esferas[i][j]);
 									
-									esferas[i][j] = null;
-									esferas[i][j] = new Esfera((int) (Math.random() * aux));
-									esferas[i][j].setLocation(x, y);
-									esferas[i][j].addMouseListener(eventoEsferas(i, j));
-									add(esferas[i][j]);
+									//TODO
+									//hacer un metodo que compruebe UNA esfera y que caigan las de arriba (j--) y al caer lo hacen moviendose y actualizandose con esfera.sety y ++
+									//se van a generar las nuevas esferas SOLO cuando todo haya terminado de caer y queden los huecos libres
+									//al generarse las nuevas esferas hay que poner un timer pequenyisimo entre cada random para que no se generen los mismos números
+									
+									//desplazo las esferas hacia abajo
+									if (i > 0 && esferas[i][j] != esfLista[esfNum]) {
+										int auxI = i;
+										int posY;
+										do {
+											posY = esferas[auxI][j].getY();
+											remove(esferas[auxI][j]);
+											esferas[auxI][j] = new Esfera(esferas[auxI-1][j]);
+											esferas[auxI][j].setLocation(esferas[auxI-1][j].getX(), posY);
+											add(esferas[auxI][j]);
+											esferas[auxI][j].addMouseListener(eventoEsferas(auxI, j));
+											auxI--;
+										} while (auxI>0);
+									}
+									
+									int x = esferas[0][j].getX();
+									int y = esferas[0][j].getY();
+									esferas[0][j] = null;
+									esferas[0][j] = new Esfera((int) (Math.random() * 8) + 1);
+									esferas[0][j].setLocation(x, y);
+									esferas[0][j].addMouseListener(eventoEsferas(i, j));
+									add(esferas[0][j]);
 								}//if
 							}//for
 						}//for
 						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
 						
-						if (hayJugadasDisponibles()) {
+						if (!hayJugadasDisponibles()) {
 							EntornoJuego.getInstance().finDeJuego();
 						}
 						
@@ -150,7 +168,7 @@ public class Tablero extends JPanel {
 					esfLista = null;
 					//conectores = null;
 				}
-			}
+			}//mouseReleased
 		};
 		
 		return ml;

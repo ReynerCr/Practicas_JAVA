@@ -7,11 +7,16 @@ public class Esfera extends JLabel {
 	private int valor;
 	private boolean activo;
 	private int conector;
-	private int i;
-	private int j;
 	
 	public Esfera(int valor) {
 		this.valor = valor;
+		setValor(valor);
+		this.setSize(70, 70);
+		activo = false;
+	}//
+	
+	public Esfera(Esfera esfera) {
+		this.valor = esfera.valor;
 		setValor(valor);
 		this.setSize(70, 70);
 		activo = false;
@@ -48,22 +53,6 @@ public class Esfera extends JLabel {
 	
 	public boolean getActivo() {
 		return activo;
-	}
-	
-	public int getI() {
-		return i;
-	}
-	
-	public int getJ() {
-		return j;
-	}
-	
-	public void setI(int i) {
-		this.i = i;
-	}
-	
-	public void setJ(int j) {
-		this.j = j;
 	}
 	
 	private int redondear(int valor) {
