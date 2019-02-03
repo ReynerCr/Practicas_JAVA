@@ -2,28 +2,28 @@ package codigo;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import javax.swing.JPanel;
-
+//TODO arreglar codigo para que se vea bonito y anyadirle javadoc
 @SuppressWarnings("serial")
 public class Tablero extends JPanel {
 	private Esfera esferas[][];
 	private Esfera esfLista[];
-	//private Conector conectores[];
 	private int esfNum = -1; //-1 es que no hay nada cargado
 	private int sumatoriaValores; //me guarda los valores de las esferas seleccionadas
+	private int mayorValor;
+	public final int distX = 80;
+	public final int distY = 80;
+	private boolean pausa = false;
+	
 	
 	public Tablero() {
 		this.setLayout(null);
 		this.setOpaque(false);
+		mayorValor = 8;
 		
 		do {
 			iniciarEsferas();
 		} while (!hayJugadasDisponibles()); 
-		
-		for (int i = 0; i < 7; i++) 
-			for (int j = 0; j < 5; j++) 
-				this.add(esferas[i][j]);
 	}
 	
 	private void iniciarEsferas() {
@@ -32,40 +32,36 @@ public class Tablero extends JPanel {
 		
 		int x, y;
 		for (int i = 0; i < 7; i++) {
-			y = (80*i) + 15;
+			y = (distY * i) + 15;
 			for (int j = 0; j < 5; j++) {
-				x = (80 * j) + 105;
-				int aux = (int) (Math.random() * 8) + 1;
+				x = (distX * j) + 105;
+				int aux = (int) ((Math.random() * 8) + 1);
 				esferas[i][j] = new Esfera(aux);
 				esferas[i][j].setLocation(x, y);
 				esferas[i][j].addMouseListener(eventoEsferas(i, j));
-				
+				this.add(esferas[i][j]);
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}//for j
 		}//for i
-		
 	}//iniciarEsferas()
-	//TODO embellecer este evento; en teoria funciona bien pero esta mal organizado creo yo
+	
 	private MouseListener eventoEsferas(int i, int j) {
 		MouseListener ml = new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if (EntornoJuego.getInstance().getTime().getActivo()) {
-					esfNum = -1;
-					sumatoriaValores = 0;
-					esferas[i][j].setActivo(false);
-					esfLista = null;
-				}
 			}//mouseClicked
 			
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				if (esfNum >= 0) {
+				if (!pausa) {
 					if (esfNum > 0 && esfLista[esfNum-1]==esferas[i][j]) {
 						sumatoriaValores -= esfLista[esfNum].getValor();
 						esfLista[esfNum].setActivo(false);
 						esfLista[esfNum] = null;
-						//remove(conectores[esfNum]);
-						//conectores[esfNum] = null;
 						esfNum--;
 						
 						if (esfNum == -1) {
@@ -80,13 +76,11 @@ public class Tablero extends JPanel {
 								esfNum++;
 								esferas[i][j].setActivo(true);
 								esfLista[esfNum] = esferas[i][j];
-								//anyadirConector(direccion);
-							}
+							}//if direccion != 0
 						}//if
 					}//else if 
-					revalidate();
-					repaint();
-				}//if esferasCargadas mayor o igual a cero
+				}//if !pausa
+					
 			}//mouseEntered
 			@Override
 			
@@ -96,83 +90,122 @@ public class Tablero extends JPanel {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (EntornoJuego.getInstance().getTime().getActivo()) {
+				if (!pausa) {
 					esfLista = new Esfera[35];
-					//conectores = new Conector[35];
-					
 					esfNum++;
 					esferas[i][j].setActivo(true);
 					esfLista[esfNum] = esferas[i][j];
 					sumatoriaValores = esferas[i][j].getValor();
 				}
-				
 				//TODO aqui sonido de inicio
 			}//mousePressed
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (esfNum >= 0) {
-					if (esfNum > 0) {
+				if (!pausa) {
+					if (esfNum >= 1) {
+						pausa = true;
 						esfLista[esfNum].setValor(sumatoriaValores);
 						esfLista[esfNum].setActivo(false);
 						
-						for (int i = 0; i < 7; i++) {
-							for (int j = 0; j < 5; j++) {
-								if(esferas[i][j].getActivo()) {
-									remove(esferas[i][j]);
+						for (int j = 0; j < 5; j++) {
+							for (int i = 6; i > -1; i--) {
+								if (esferas[i][j] == null || esferas[i][j].getActivo()) {
+									if (esferas[i][j] != null) {
+										if (esferas[i][j].getActivo())
+											esferas[i][j].setActivo(false);
+										if (esferas[i][j] != esfLista[esfNum]) {
+											remove(esferas[i][j]);
+											esferas[i][j] = null;
+										}//if esfera != esfLista[esfNum]
+									}//if esfera != null
 									
-									//TODO
-									//hacer un metodo que compruebe UNA esfera y que caigan las de arriba (j--) y al caer lo hacen moviendose y actualizandose con esfera.sety y ++
-									//se van a generar las nuevas esferas SOLO cuando todo haya terminado de caer y queden los huecos libres
-									//al generarse las nuevas esferas hay que poner un timer pequenyisimo entre cada random para que no se generen los mismos números
-									
-									//desplazo las esferas hacia abajo
-									if (i > 0 && esferas[i][j] != esfLista[esfNum]) {
-										int auxI = i;
-										int posY;
-										do {
-											posY = esferas[auxI][j].getY();
-											remove(esferas[auxI][j]);
-											esferas[auxI][j] = new Esfera(esferas[auxI-1][j]);
-											esferas[auxI][j].setLocation(esferas[auxI-1][j].getX(), posY);
-											add(esferas[auxI][j]);
-											esferas[auxI][j].addMouseListener(eventoEsferas(auxI, j));
-											auxI--;
-										} while (auxI>0);
-									}
-									
-									int x = esferas[0][j].getX();
-									int y = esferas[0][j].getY();
-									esferas[0][j] = null;
-									esferas[0][j] = new Esfera((int) (Math.random() * 8) + 1);
-									esferas[0][j].setLocation(x, y);
-									esferas[0][j].addMouseListener(eventoEsferas(i, j));
-									add(esferas[0][j]);
-								}//if
-							}//for
-						}//for
+									esferas[i][j] = comprobarEsferas(i, j);
+									resetearMl(i, j);
+									esferas[i][j].iniciarCaida((distY * i) + 15);
+								}
+							}//for j
+						}//for i
+
+						//TODO al salir con el boton, que se pregunte al usuario si desea salir; si acepta PUEDE que su puntaje se guarde en top10 en caso de que su puntaje sea alto, y claro debe haber superado el puntaje minimo
+
 						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
-						
 						if (!hayJugadasDisponibles()) {
 							EntornoJuego.getInstance().finDeJuego();
 						}
 						
-						revalidate();
-						repaint();
+						if (esfLista[esfNum].getValor() > mayorValor) {
+							mayorValor = esfLista[esfNum].getValor();
+						}
+						
 						//TODO anyadir sonido de fin de cadena
-					}
+						pausa = false;
+					}//esfNum > 0
 					
-					esfLista[esfNum].setActivo(false);
-					esfNum = -1;
-					sumatoriaValores = 0;
-					esfLista = null;
-					//conectores = null;
+					else
+						esfLista[esfNum].setActivo(false);
 				}
+				
+				esfNum = -1;
+				esfLista = null;
+				sumatoriaValores = 0;
 			}//mouseReleased
 		};
 		
 		return ml;
 	}//eventoEsferas
+	
+	private void resetearMl(int i, int j) {
+		MouseListener ml2[] = esferas[i][j].getMouseListeners();
+		
+		for (int k = 0; k < ml2.length; k++)
+			esferas[i][j].removeMouseListener(ml2[k]);
+		
+		esferas[i][j].addMouseListener(eventoEsferas(i, j));
+	}
+	
+	private Esfera comprobarEsferas(int i, int j) {
+		if ((i == 0 && esferas[i][j] == null) || (i == 0 && esferas[i][j].getActivo())) {
+			Esfera esferita;
+			int aux = (int) ((Math.random()) * 20);
+			
+			if (aux == 19) //5% de que se genere la esfera de mayor valor
+				aux = mayorValor;
+			
+			else if (aux >= 0 && aux < 16) //80% de que se genere una esfera que este de 2 a  a la mayor
+				aux = ((int) ((Math.random() + 0.01d) * mayorValor));
+			
+			else //15% de que se genere una esfera del 2 al 8
+				aux = ((int) (Math.random() * 8) + 1);
+			
+			esferita = new Esfera(aux);
+			esferita.setLocation((distX * j) + 105, -85);
+			add(esferita);
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			return esferita;
+		}//cuando ya no hay mas para revisar; i == 0
+
+		else if (esferas[i][j] != null && !(esferas[i][j].getActivo())) {
+			Esfera esferita = esferas[i][j];
+			esferas[i][j] = null;
+			return esferita;
+		}
+		
+		else {
+			Esfera esferita = comprobarEsferas(i - 1, j);
+			return esferita;
+		}
+	}//comprobarEsfera(int i, int j)
+	
+	//solucion recursiva donde evaluo un null y busco si arriba hay otra esfera que no tenga null
+	//en la recursividad tengo que evaluar que i!=0
+	//tengo que tener una condicion de null todo asi que se deberia recrear a la fila entera
 	
 	private int retornarDireccion(int i, int j) {
 		int direccion = 0;
@@ -197,43 +230,13 @@ public class Tablero extends JPanel {
 		return direccion;
 	}//retornarDireccion(int, int)
 	
-	/*private void anyadirConector(int direccion) {
-		conectores[esfNum] = new Conector(direccion, esfLista[esfNum-1].getConector());
-		switch(direccion) {
-			case 1:
-				conectores[esfNum].setLocation(esfLista[esfNum].getX() - conectores[esfNum].getHeight(),
-						esfLista[esfNum].getY() + 10);
-				break;
-			case 2://
-				conectores[esfNum].setLocation(esfLista[esfNum].getX() - (esfLista[esfNum].getWidth()/2),
-						esfLista[esfNum].getY() + (esfLista[esfNum].getHeight()));
-				
-				break;
-			case 3:
-				conectores[esfNum].setLocation(esfLista[esfNum].getX() + esfLista[esfNum].getWidth(),
-						esfLista[esfNum].getY() + esfLista[esfNum].getHeight());
-				break;
-			case 4://
-				conectores[esfNum].setLocation(esfLista[esfNum].getX() + (esfLista[esfNum].getWidth()/2),
-						esfLista[esfNum].getY() + (esfLista[esfNum].getHeight()/2));
-				break;
-			case 5://
-				conectores[esfNum].setLocation(esfLista[esfNum].getX() - (esfLista[esfNum].getWidth()/2),
-						esfLista[esfNum].getY() + (esfLista[esfNum].getHeight()/2));
-				break;
-			case 6:
-				conectores[esfNum].setLocation(esfLista[esfNum].getX(),
-						esfLista[esfNum].getY() + esfLista[esfNum].getHeight());
-				break;
-			case 7: //
-				conectores[esfNum].setLocation(esfLista[esfNum].getX() + 6,
-						esfLista[esfNum].getY() - 10);
-				break;
-			case 8:
-				break;
-		}//switch
-		this.add(conectores[esfNum]);
-	}*/
+	public void setPausa(boolean estado) {
+		pausa = estado;
+	}
+	
+	public boolean getPausa() {
+		return pausa;
+	}
 	
 	private boolean hayJugadasDisponibles() {
 		boolean jugadas = false;
@@ -271,5 +274,4 @@ public class Tablero extends JPanel {
 		}//for i
 		return jugadas;
 	}//hayJugadasDisponibles
-	
 }

@@ -1,58 +1,73 @@
 package codigo;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JLabel;
+import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class Esfera extends JLabel {
 	private int valor;
 	private boolean activo;
-	private int conector;
+	private Timer caida;
+	private int posicion;
+	private JLabel difuminado;
 	
 	public Esfera(int valor) {
 		this.valor = valor;
 		setValor(valor);
-		this.setSize(70, 70);
+		this.setSize(60, 60);
 		activo = false;
+		caida = new Timer(10, new TimerCaida());
+		difuminado = new JLabel(ImageLoader.getInstance().getEsfera(0));
+		difuminado.setSize(60, 60);
 	}//
 	
 	public Esfera(Esfera esfera) {
 		this.valor = esfera.valor;
-		setValor(valor);
-		this.setSize(70, 70);
-		activo = false;
+		this.setValor(valor);
+		this.setSize(60, 60);
+		this.activo = false;
+		this.setLocation(esfera.getLocation());
+		difuminado = new JLabel(ImageLoader.getInstance().getEsfera(0));
 	}//
 
 	public void setValor(int valor) {
 		valor = redondear(valor);
 		this.valor = valor;
 		
-		int i = 0;
-		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i) != valor) {
+		int i = 1;
+		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i-1) != valor) {
 			i++;
 		}
 		i--;
-		
+
 		this.setIcon(ImageLoader.getInstance().getEsfera(i));
-		if (i >= 8)
-			i -= 8;
-		
-		conector = i;
 	}
 	
 	public int getValor() {
 		return valor;
 	}
 	
-	public int getConector() {
-		return conector;
-	}
-	
 	public void setActivo(boolean activo) {
 		this.activo = activo;
+		if (activo) {
+			this.getParent().add(difuminado);
+			difuminado.setLocation(this.getX(), this.getY());
+		}
+		else
+			this.getParent().remove(difuminado);
+			this.getParent().revalidate();
+			this.getParent().repaint();
 	}
 	
 	public boolean getActivo() {
 		return activo;
+	}
+	
+	public JLabel getDifuminado() {
+		return difuminado;
 	}
 	
 	private int redondear(int valor) {
@@ -93,4 +108,21 @@ public class Esfera extends JLabel {
 		
 		return valor;
 	}
+	
+	public void iniciarCaida(int posicion) {
+		this.posicion = posicion;
+		caida.start();
+	}
+	
+	class TimerCaida implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (getY() < posicion) {
+				setLocation(getX(), getY() + 10);
+			}
+			else {
+				caida.stop();
+			}
+		}//actionPerformed()
+	};//TimerCaida
 }

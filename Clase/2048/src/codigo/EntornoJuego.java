@@ -37,11 +37,11 @@ public class EntornoJuego extends PanelPadre {
 	
 	private void iniciarComponentes() {
 		time = new Tiempo();
-		time.iniciar();
-		time.iniciarTiempo();
 		inciarParteSuperior();
 		iniciarTablero();
 		iniciarParteInferior();
+		time.reiniciar();
+		time.iniciarTiempo();
 	}
 	
 	void setNombre(String nombre) {
@@ -73,12 +73,15 @@ public class EntornoJuego extends PanelPadre {
 			public void actionPerformed(ActionEvent e) {
 				if (time.getActivo()) {
 					time.pararTiempo();
+					tablero.setPausa(true);
 					pausar.setIcon(ImageLoader.getInstance().getOtros(5));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(3));
+					
 				}
 				
 				else {
 					time.iniciarTiempo();
+					tablero.setPausa(false);
 					pausar.setIcon(ImageLoader.getInstance().getOtros(4));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
 				}
@@ -101,6 +104,7 @@ public class EntornoJuego extends PanelPadre {
 	
 	void finDeJuego() {
 		time.pararTiempo();
+		tablero.setPausa(true);
 		JOptionPane.showMessageDialog(null, nombre + " tu puntaje es de: " + puntaje + " y el tiempo total: " + time.getTiempo());
 		
 		String dir = "top10.dat";
@@ -110,34 +114,32 @@ public class EntornoJuego extends PanelPadre {
 			try {
 				Scanner entrada = new Scanner(new File(dir));
 				
-				while (entrada.hasNextLine() && i<10) {
-					String cad[] = entrada.nextLine().split("@");
+				String cad[] = new String[2];
+				while (entrada.hasNextLine() && i < 10) {
+					if (cad[0] == null) 
+						cad = entrada.nextLine().split("@");
 					
-					if (puntaje >= Long.parseLong(cad[1])) {
+					if (puntaje > Long.parseLong(cad[1]) || (Long.parseLong(cad[1]) == 0 && puntaje > 0)) {
 						datos[i][0] = nombre;
 						datos[i][1] = Long.toString(puntaje);
 						puntaje = 0;
-						if (i < 10 && entrada.hasNextLine()) {
-							i++;
-							datos[i][0] = cad[0];
-							datos[i][1] = cad[1];
-						}
 					}
 					else {
 						datos[i][0] = cad[0];
 						datos[i][1] = cad[1];
+						cad[0] = null;
 					}
 					i++;
 				}//while
-				
-				if (puntaje != 0 && i < 10) {
-					datos[i][0] = nombre;
-					datos[i][1] = Long.toString(puntaje);
-					i++;
-				}
-				
+				cad = null;
 				entrada.close();
-			} catch (IOException e1) {
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Ocurrio un error con el archivo de guardado, se creara uno nuevo solo con su puntaje actual.");
+				datos[j][0] = nombre;
+				datos[j][1] = Long.toString(puntaje);
+				i++;
+			} catch (ArrayIndexOutOfBoundsException e) {
+				JOptionPane.showMessageDialog(null, "Ocurrio un error con el archivo de guardado, se creara uno nuevo solo con su puntaje actual.");
 				datos[j][0] = nombre;
 				datos[j][1] = Long.toString(puntaje);
 				i++;
@@ -150,7 +152,7 @@ public class EntornoJuego extends PanelPadre {
 			for (j = 0; j < i; j++) {
 				pw.println(datos[j][0] + "@" + datos[j][1]);
 			}//for
-			
+			pw.println("-unknown-@0");
 			pw.close();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Ocurrio un error al guardar el puntaje. " + e.getMessage());
@@ -173,15 +175,32 @@ public class EntornoJuego extends PanelPadre {
 		volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				time.iniciar();
-				time.pararTiempo();
-				time.setText(time.getTiempo());
-				
-				puntaje = 0;
-				ePuntaje.setText(Long.toString(puntaje));
-				
-				Juego.getInstance().actualizarFrame(Menu.getInstance());
-			}
+				int pregunta = 0;
+				if (puntaje != 0) {
+					time.pararTiempo();
+					pregunta = JOptionPane.showConfirmDialog(null, "Esta seguro de que desea volver al menu? "
+							+ "Si lo hace perdera la sesion actual, pero su puntaje se guardara en "
+							+ "caso de ser top10.", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					
+					if (!(tablero.getPausa()))
+						time.iniciarTiempo();
+				}
+				if (pregunta == 0) {
+					if (puntaje != 0)
+						finDeJuego();
+					else {
+						time.reiniciar();
+						time.pararTiempo();
+						
+						time.setText(time.getTiempo());
+						
+						puntaje = 0;
+						ePuntaje.setText(Long.toString(puntaje));
+						
+						Juego.getInstance().actualizarFrame(Menu.getInstance());
+					}
+				}//if se acepto la advertencia
+			}//actionPerformed
 		});
 		parteInferior.add(volver);
 		
@@ -212,11 +231,12 @@ public class EntornoJuego extends PanelPadre {
 		
 		pausar.setIcon(ImageLoader.getInstance().getOtros(4));
 		pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
-
+		
 		remove(tablero);
 		iniciarTablero();
 		
-		time.iniciar();
+		time.reiniciar();
+		tablero.setPausa(false);
 		time.setText(time.getTiempo());
 	}
 }

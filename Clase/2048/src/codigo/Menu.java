@@ -3,12 +3,8 @@ package codigo;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -156,45 +152,45 @@ public class Menu extends PanelPadre {
 					int i = 0;
 					while(entrada.hasNextLine() && i < 10) {
 						String cadenas[] = (entrada.nextLine()).split("@");
-						Long.parseLong(cadenas[1]); //valido que el puntaje si sean numeros
-						etiqueticas[i] = new EtiquetaPersonalizada((i+1) + ". " + cadenas[0] + "......"+ cadenas[1], 540, 50, 18);
-						etiqueticas[i].setLocation(30, 190 + (i*40));
-						panel.add(etiqueticas[i]);
-						i++;
+						if (Long.parseLong(cadenas[1]) != 0) {
+							etiqueticas[i] = new EtiquetaPersonalizada((i+1) + ". " + cadenas[0] + "......"+ cadenas[1], 540, 50, 18);
+							etiqueticas[i].setLocation(30, 190 + (i*40));
+							panel.add(etiqueticas[i]);
+							i++;
+						}
+						else
+							break;
 					}//while para leer los datos y mostrarlos
 					
 					if (i == 0) 
-						throw new FileNotFoundException(); //reutilizo codigo en caso de que nadie haya jugado y terminado
+						throw new IOException(); //reutilizo codigo
 					
 					entrada.close();
-				} catch (FileNotFoundException e1) {
+				} catch (IOException e1) {
+					if (entrada != null)
+						entrada.close();
+					
+					for (int i = 0; i < etiqueticas.length && etiqueticas[i]!=null; i++)
+						panel.remove(etiqueticas[i]);
+					
 					etiqueticas[0] = new EtiquetaPersonalizada("No hay registros de jugadores.", 540, 50, 18);
 					etiqueticas[0].setLocation(30, 320);
 					panel.add(etiqueticas[0]);
-				} catch (NumberFormatException e1) { //rehago el archivo y guardo una copia del archivo viejo 
-					JOptionPane.showMessageDialog(null, "El archivo esta corrupto, se creara una copia en el directorio y se borrara el original.");
+					
+					JOptionPane.showMessageDialog(null, "El archivo esta corrupto, se creara de nuevo al jugar.");
+					new File(dir).delete();
+				} catch (ArrayIndexOutOfBoundsException e1) {
 					entrada.close();
-					try {
-						for (int i = 0; i < etiqueticas.length && etiqueticas[i]!=null; i++)
-							panel.remove(etiqueticas[i]);
-						
-						FileWriter fw = new FileWriter(new File("DANADO_" + dir));
-						BufferedWriter bw = new BufferedWriter(fw);
-						PrintWriter pw = new PrintWriter(bw);
-						
-						entrada = new Scanner(new File(dir));
-						
-						while (entrada.hasNextLine())
-							pw.println(entrada.nextLine());
-						
-						entrada.close();
-						pw.close();
-						
-						System.out.println(new File(dir).delete());
-					} catch (IOException e2) {
-						JOptionPane.showMessageDialog(null, "Ocurrio un error grave: " + e2.getMessage());
-					}//catch
-				}//catch
+					for (int i = 0; i < etiqueticas.length && etiqueticas[i]!=null; i++)
+						panel.remove(etiqueticas[i]);
+					
+					etiqueticas[0] = new EtiquetaPersonalizada("No hay registros de jugadores.", 540, 50, 18);
+					etiqueticas[0].setLocation(30, 320);
+					panel.add(etiqueticas[0]);
+					
+					JOptionPane.showMessageDialog(null, "El archivo esta corrupto, se creara de nuevo al jugar.");
+					new File(dir).delete();
+				}
 				
 				volver.setLocation(30, panel.getHeight() - 150);
 				panel.add(volver);

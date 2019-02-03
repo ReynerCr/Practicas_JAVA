@@ -8,14 +8,12 @@ import javax.swing.ImageIcon;
 public class ImageLoader {
 	private static ImageLoader instance = null;
 	
-	public static final int MAX_ESFERAS = 16;
-	public static final int MAX_CONECTORES = 31;
-	
+	public static final int MAX_ESFERAS = 17;
+
 	private Image background;
 	private ImageIcon etiquetas;
 	private ImageIcon botones[];
 	private ImageIcon esferas[];
-	private ImageIcon conectores[];
 	private ImageIcon otros[]; //aqui se guarda icono para boton de menu, pausar, iniciar, etc
 	
 	private ImageLoader() {
@@ -27,22 +25,14 @@ public class ImageLoader {
 
 		esferas = new ImageIcon[MAX_ESFERAS];
 		URL url = this.getClass().getResource("/recursos/imagenes/esferas/");
-		for (int i = 0; i < esferas.length; i++) {
+		for (int i = 0; i < MAX_ESFERAS; i++) {
 			esferas[i] = new ImageIcon(url.getPath() + i + ".png");
 		}
-		
-		url = this.getClass().getResource("/recursos/imagenes/lineas/");
-		conectores = new ImageIcon[MAX_CONECTORES];
-		for (int i = 0; i < MAX_CONECTORES; i++) {
-			conectores[i] = new ImageIcon(url.getPath() + i + ".png");
-		}
-			
 		
 		url = this.getClass().getResource("/recursos/imagenes/otros/");
 		otros = new ImageIcon[10];
 		for (int i = 0; i < 10; i++)
 			otros[i] = new ImageIcon(url.getPath() + i + ".png");
-		
 		
 		setFondo(0); //cambio el fondo
 	}
@@ -81,9 +71,4 @@ public class ImageLoader {
 	public ImageIcon getOtros(int i) {
 		return otros[i];
 	}
-	
-	public ImageIcon getConectores(int i) {
-		return conectores[i];
-	}
-	
 }
