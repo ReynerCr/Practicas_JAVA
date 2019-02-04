@@ -21,7 +21,7 @@ public class Esfera extends JLabel {
 		activo = false;
 		caida = new Timer(10, new TimerCaida());
 		difuminado = new JLabel(ImageLoader.getInstance().getEsfera(0));
-		difuminado.setSize(60, 60);
+		difuminado.setSize(70, 70);
 	}//
 	
 	public Esfera(Esfera esfera) {
@@ -34,27 +34,35 @@ public class Esfera extends JLabel {
 	}//
 
 	public void setValor(int valor) {
-		valor = redondear(valor);
+		//redondeo el valor que recibe la funcion
+		int i = 1;
+		while (valor >= Math.pow(2, i) && i <= 16) {
+			i++;
+		}
+		if (i > 1)
+			i--;
+		valor = (int) (Math.pow(2, i));
+
 		this.valor = valor;
 		
-		int i = 1;
-		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i-1) != valor) {
+		i = 1;
+		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i-1) != this.valor) {
 			i++;
 		}
 		i--;
-
+		
 		this.setIcon(ImageLoader.getInstance().getEsfera(i));
 	}
 	
 	public int getValor() {
 		return valor;
 	}
-	
+
 	public void setActivo(boolean activo) {
 		this.activo = activo;
 		if (activo) {
 			this.getParent().add(difuminado);
-			difuminado.setLocation(this.getX(), this.getY());
+			difuminado.setLocation(this.getX() - 5, this.getY() - 5);
 		}
 		else
 			this.getParent().remove(difuminado);
@@ -69,46 +77,7 @@ public class Esfera extends JLabel {
 	public JLabel getDifuminado() {
 		return difuminado;
 	}
-	
-	private int redondear(int valor) {
-		if (valor < 2)
-			valor = 2;
-		else if (valor < 4)
-			valor = 2;
-		else if (valor < 8)
-			valor = 4;
-		else if (valor < 16)
-			valor = 8;
-		else if (valor < 32)
-			valor = 16;
-		else if (valor < 64)
-			valor = 32;
-		else if (valor < 128)
-			valor = 64;
-		else if (valor < 256)
-			valor = 128;
-		else if (valor < 512)
-			valor = 256;
-		else if (valor < 1024)
-			valor = 512;
-		else if (valor < 2048)
-			valor = 1024;
-		else if (valor < 4096)
-			valor = 2048;
-		else if (valor < 8192)
-			valor = 4096;
-		else if (valor < 16384)
-			valor = 8192;
-		else if (valor < 32768)
-			valor = 16384;
-		else if (valor < 65336)
-			valor = 32768;
-		else if (valor > 65336)
-			valor = 65336;
-		
-		return valor;
-	}
-	
+	//TODO perdi cuando no debi
 	public void iniciarCaida(int posicion) {
 		this.posicion = posicion;
 		caida.start();

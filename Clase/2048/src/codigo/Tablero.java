@@ -11,6 +11,8 @@ public class Tablero extends JPanel {
 	private int esfNum = -1; //-1 es que no hay nada cargado
 	private int sumatoriaValores; //me guarda los valores de las esferas seleccionadas
 	private int mayorValor;
+	private int MAX_FILAS = 7;
+	private int MAX_COLUMNAS = 5;
 	public final int distX = 80;
 	public final int distY = 80;
 	private boolean pausa = false;
@@ -26,14 +28,13 @@ public class Tablero extends JPanel {
 		} while (!hayJugadasDisponibles()); 
 	}
 	
-	private void iniciarEsferas() {
-		esferas = null;
-		esferas = new Esfera[7][5];  
+	private void iniciarEsferas() {		int x, y;
 		
-		int x, y;
-		for (int i = 0; i < 7; i++) {
+		esferas = new Esfera[MAX_FILAS][MAX_COLUMNAS];
+		
+		for (int i = 0; i < MAX_FILAS; i++) {
 			y = (distY * i) + 15;
-			for (int j = 0; j < 5; j++) {
+			for (int j = 0; j < MAX_COLUMNAS; j++) {
 				x = (distX * j) + 105;
 				int aux = (int) ((Math.random() * 8) + 1);
 				esferas[i][j] = new Esfera(aux);
@@ -48,7 +49,7 @@ public class Tablero extends JPanel {
 			}//for j
 		}//for i
 	}//iniciarEsferas()
-	
+
 	private MouseListener eventoEsferas(int i, int j) {
 		MouseListener ml = new MouseListener() {
 			@Override
@@ -91,7 +92,7 @@ public class Tablero extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (!pausa) {
-					esfLista = new Esfera[35];
+					esfLista = new Esfera[MAX_FILAS * MAX_COLUMNAS];
 					esfNum++;
 					esferas[i][j].setActivo(true);
 					esfLista[esfNum] = esferas[i][j];
@@ -103,13 +104,13 @@ public class Tablero extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (!pausa) {
-					if (esfNum >= 1) {
+					if (esfNum > 0) {
 						pausa = true;
 						esfLista[esfNum].setValor(sumatoriaValores);
 						esfLista[esfNum].setActivo(false);
 						
-						for (int j = 0; j < 5; j++) {
-							for (int i = 6; i > -1; i--) {
+						for (int j = 0; j < MAX_COLUMNAS; j++) {
+							for (int i = (MAX_FILAS - 1); i >= 0; i--) {
 								if (esferas[i][j] == null || esferas[i][j].getActivo()) {
 									if (esferas[i][j] != null) {
 										if (esferas[i][j].getActivo())
@@ -127,8 +128,6 @@ public class Tablero extends JPanel {
 							}//for j
 						}//for i
 
-						//TODO al salir con el boton, que se pregunte al usuario si desea salir; si acepta PUEDE que su puntaje se guarde en top10 en caso de que su puntaje sea alto, y claro debe haber superado el puntaje minimo
-
 						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
 						if (!hayJugadasDisponibles()) {
 							EntornoJuego.getInstance().finDeJuego();
@@ -144,7 +143,7 @@ public class Tablero extends JPanel {
 					
 					else
 						esfLista[esfNum].setActivo(false);
-				}
+				}//if !pausa
 				
 				esfNum = -1;
 				esfLista = null;
@@ -169,13 +168,10 @@ public class Tablero extends JPanel {
 			Esfera esferita;
 			int aux = (int) ((Math.random()) * 20);
 			
-			if (aux == 19) //5% de que se genere la esfera de mayor valor
-				aux = mayorValor;
-			
-			else if (aux >= 0 && aux < 16) //80% de que se genere una esfera que este de 2 a  a la mayor
+			if (aux >= 0 && aux < 16) //80% de que se genere una esfera que este de 2 a  a la mayor
 				aux = ((int) ((Math.random() + 0.01d) * mayorValor));
 			
-			else //15% de que se genere una esfera del 2 al 8
+			else //20% de que se genere una esfera del 2 al 8
 				aux = ((int) (Math.random() * 8) + 1);
 			
 			esferita = new Esfera(aux);
@@ -183,7 +179,7 @@ public class Tablero extends JPanel {
 			add(esferita);
 			
 			try {
-				Thread.sleep(10);
+				Thread.sleep(20);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -203,29 +199,25 @@ public class Tablero extends JPanel {
 		}
 	}//comprobarEsfera(int i, int j)
 	
-	//solucion recursiva donde evaluo un null y busco si arriba hay otra esfera que no tenga null
-	//en la recursividad tengo que evaluar que i!=0
-	//tengo que tener una condicion de null todo asi que se deberia recrear a la fila entera
-	
 	private int retornarDireccion(int i, int j) {
 		int direccion = 0;
 		
-		if (i!=0 && j!=0 && esferas[i-1][j-1] == esfLista[esfNum]) //inf der
-			direccion = 8;
-		else if (i!=0 && esferas[i-1][j] == esfLista[esfNum]) //abajo
-			direccion = 7;
-		else if (i!=0 && j!=4 && esferas[i-1][j+1] == esfLista[esfNum])//inf izq
-			direccion = 6;
-		else if (j!=0 && esferas[i][j-1] == esfLista[esfNum]) //der
-			direccion = 5;
-		else if (j!=4 && esferas[i][j+1] == esfLista[esfNum]) //izq
-			direccion = 4;
-		else if (i!=6 && j!=0 && esferas[i+1][j-1] == esfLista[esfNum]) //sup der
-			direccion = 3;
-		else if (i!=6 && esferas[i+1][j] == esfLista[esfNum]) //arriba
-			direccion = 2;
-		if (i!=6 && j!=4 && esferas[i+1][j+1] == esfLista[esfNum]) //sup izq
+		if ((i > 0) && (j > 0) && esferas[i-1][j-1] == esfLista[esfNum]) //sup izq
 			direccion = 1;
+		else if ((i > 0) && esferas[i-1][j] == esfLista[esfNum]) //arriba
+			direccion = 2;
+		else if ((i > 0) && (j < MAX_COLUMNAS - 1) && esferas[i-1][j+1] == esfLista[esfNum])//sup der
+			direccion = 3;
+		else if ((j > 0) && esferas[i][j-1] == esfLista[esfNum]) //izq
+			direccion = 4;
+		else if ((j < MAX_COLUMNAS - 1) && esferas[i][j+1] == esfLista[esfNum]) //der
+			direccion = 5;
+		else if ((i < MAX_FILAS - 1) && (j > 0) && esferas[i+1][j-1] == esfLista[esfNum]) //inf izq
+			direccion = 6;
+		else if ((i < MAX_FILAS - 1) && esferas[i+1][j] == esfLista[esfNum]) //abajo
+			direccion = 7;
+		else if ((i < MAX_FILAS - 1) && (j < MAX_COLUMNAS - 1) && esferas[i+1][j+1] == esfLista[esfNum]) //inf der
+			direccion = 8;
 		
 		return direccion;
 	}//retornarDireccion(int, int)
@@ -240,36 +232,31 @@ public class Tablero extends JPanel {
 	
 	private boolean hayJugadasDisponibles() {
 		boolean jugadas = false;
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 5 && jugadas!=true; j++) {
-				try { //try para cuando el i o j se salen del array
-					if (esferas[i][j].getValor() == esferas[i-1][j-1].getValor()) { //diag sup izq
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i-1][j].getValor()) { //arriba
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i-1][j+1].getValor()) { //diag sup der
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i][j-1].getValor()) { //izq
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i][j+1].getValor()) { //der
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i+1][j-1].getValor()) { //diag inf izq
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i+1][j].getValor()) { //abajo
-						jugadas = true;
-					}
-					else if (esferas[i][j].getValor() == esferas[i+1][j+1].getValor()) {//diag inf der
-						jugadas = true;
-					}
-				} catch (ArrayIndexOutOfBoundsException e) {
-				} catch (NegativeArraySizeException e) {
-				}
+		for (int i = 0; i < MAX_FILAS; i++) {
+			for (int j = 0; j < MAX_COLUMNAS && jugadas!=true; j++) {
+				if ((i > 0) && (j > 0) && esferas[i][j].getValor() == esferas[i-1][j-1].getValor())  //diag sup izq
+					jugadas = true;
+				
+				else if ((i > 0) && esferas[i][j].getValor() == esferas[i-1][j].getValor())  //arriba
+					jugadas = true;
+				
+				else if ((i > 0) && (j < MAX_COLUMNAS - 1) && esferas[i][j].getValor() == esferas[i-1][j+1].getValor())  //diag sup der
+					jugadas = true;
+				
+				else if ((j > 0) && esferas[i][j].getValor() == esferas[i][j-1].getValor())  //izq
+					jugadas = true;
+				
+				else if ((j < MAX_COLUMNAS - 1) && esferas[i][j].getValor() == esferas[i][j+1].getValor())  //der
+					jugadas = true;
+				
+				else if ((i < MAX_FILAS - 1)  && (j > 0) && esferas[i][j].getValor() == esferas[i+1][j-1].getValor())  //diag inf izq
+					jugadas = true;
+				
+				else if ((i < MAX_FILAS - 1) && esferas[i][j].getValor() == esferas[i+1][j].getValor())  //abajo
+					jugadas = true;
+				
+				else if ((i < MAX_FILAS - 1) && (j < MAX_COLUMNAS - 1) && esferas[i][j].getValor() == esferas[i+1][j+1].getValor()) //diag inf der
+					jugadas = true;
 			}//for j
 		}//for i
 		return jugadas;

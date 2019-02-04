@@ -38,10 +38,8 @@ public class EntornoJuego extends PanelPadre {
 	private void iniciarComponentes() {
 		time = new Tiempo();
 		inciarParteSuperior();
-		iniciarTablero();
 		iniciarParteInferior();
-		time.reiniciar();
-		time.iniciarTiempo();
+		reiniciar();
 	}
 	
 	void setNombre(String nombre) {
@@ -54,7 +52,11 @@ public class EntornoJuego extends PanelPadre {
 		
 		return instance;
 	}
-
+	
+	public String getNombre() {
+		return nombre;
+	}
+	
 	private void inciarParteSuperior() {
 		JPanel parteSuperior = new JPanel(new FlowLayout());
 		parteSuperior.setOpaque(false);
@@ -63,8 +65,7 @@ public class EntornoJuego extends PanelPadre {
 		ePuntaje = new EtiquetaPersonalizada(Long.toString(puntaje), 200, 80, 18);
 		parteSuperior.add(ePuntaje);
 
-		pausar = new JButton(ImageLoader.getInstance().getOtros(4));
-		pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
+		pausar = new JButton();
 		pausar.setBorderPainted(false);
 		pausar.setContentAreaFilled(false);
 		pausar.setPreferredSize(new Dimension(80, 80));
@@ -76,7 +77,6 @@ public class EntornoJuego extends PanelPadre {
 					tablero.setPausa(true);
 					pausar.setIcon(ImageLoader.getInstance().getOtros(5));
 					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(3));
-					
 				}
 				
 				else {
@@ -106,7 +106,6 @@ public class EntornoJuego extends PanelPadre {
 		time.pararTiempo();
 		tablero.setPausa(true);
 		JOptionPane.showMessageDialog(null, nombre + " tu puntaje es de: " + puntaje + " y el tiempo total: " + time.getTiempo());
-		
 		String dir = "top10.dat";
 		String datos[][] = new String[10][2];
 		int i = 0, j = 0;
@@ -232,11 +231,14 @@ public class EntornoJuego extends PanelPadre {
 		pausar.setIcon(ImageLoader.getInstance().getOtros(4));
 		pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
 		
-		remove(tablero);
+		if (tablero != null) {
+			remove(tablero);
+			tablero = null;
+		}
+			
 		iniciarTablero();
 		
 		time.reiniciar();
-		tablero.setPausa(false);
 		time.setText(time.getTiempo());
 	}
 }

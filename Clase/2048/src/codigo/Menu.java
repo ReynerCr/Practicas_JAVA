@@ -87,12 +87,14 @@ public class Menu extends PanelPadre {
 							JOptionPane.showMessageDialog(null, "Nombre no puede estar vacio.");
 						
 						else if(cajaT.getText().contains("@")) 
-							JOptionPane.showMessageDialog(null, "Lo sentimos, el caracter \"@\" no esta permitido en el nombre.");
+							JOptionPane.showMessageDialog(null, "El caracter \"@\" no esta permitido en el nombre.");
 						else if (cajaT.getText().length() > 8)
 							JOptionPane.showMessageDialog(null, "Nombre no puede ser mayor de 8 caracteres.");
 						else {
+							if (EntornoJuego.getInstance().getNombre() != null) {
+								EntornoJuego.getInstance().reiniciar();
+							}
 							EntornoJuego.getInstance().setNombre(cajaT.getText());
-							EntornoJuego.getInstance().reiniciar();
 							Juego.getInstance().actualizarFrame(EntornoJuego.getInstance());
 						}
 					}

@@ -1,8 +1,7 @@
+//Autor: Reyner Contreras, seccion 01
 package codigo;
 
 import javax.swing.ImageIcon;
-//Autores: Reyner Contreras, seccion 01
-//Programacion I.
 import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
