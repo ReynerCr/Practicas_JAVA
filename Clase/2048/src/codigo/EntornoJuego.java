@@ -109,44 +109,50 @@ public class EntornoJuego extends PanelPadre {
 		String dir = "top10.dat";
 		String datos[][] = new String[10][2];
 		int i = 0, j = 0;
+		
+		Scanner entrada = null;
 		try {
-			try {
-				Scanner entrada = new Scanner(new File(dir));
-				
-				String cad[] = new String[2];
-				while (entrada.hasNextLine() && i < 10) {
-					if (cad[0] == null) 
-						cad = entrada.nextLine().split("@");
-					
-					if (puntaje > Long.parseLong(cad[1]) || (Long.parseLong(cad[1]) == 0 && puntaje > 0)) {
-						datos[i][0] = nombre;
-						datos[i][1] = Long.toString(puntaje);
-						puntaje = 0;
-					}
-					else {
-						datos[i][0] = cad[0];
-						datos[i][1] = cad[1];
-						cad[0] = null;
-					}
-					i++;
-				}//while
-				cad = null;
-				entrada.close();
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "Ocurrio un error con el archivo de guardado, se creara uno nuevo solo con su puntaje actual.");
-				datos[j][0] = nombre;
-				datos[j][1] = Long.toString(puntaje);
-				i++;
-			} catch (ArrayIndexOutOfBoundsException e) {
-				JOptionPane.showMessageDialog(null, "Ocurrio un error con el archivo de guardado, se creara uno nuevo solo con su puntaje actual.");
-				datos[j][0] = nombre;
-				datos[j][1] = Long.toString(puntaje);
-				i++;
-			}
+			entrada = new Scanner(new File(dir));
 			
+			String cad[] = new String[2];
+			while (entrada.hasNextLine() && i < 10) {
+				if (cad[0] == null) 
+					cad = entrada.nextLine().split("@");
+				
+				if (puntaje > Long.parseLong(cad[1]) || (Long.parseLong(cad[1]) == 0 && puntaje > 0)) {
+					datos[i][0] = nombre;
+					datos[i][1] = Long.toString(puntaje);
+					puntaje = 0;
+				}
+				else {
+					datos[i][0] = cad[0];
+					datos[i][1] = cad[1];
+					cad[0] = null;
+				}
+				i++;
+			}//while
+			cad = null;
+			entrada.close();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Ocurrio un error con el archivo de guardado, se creara uno nuevo solo con su puntaje actual.");
+			datos[j][0] = nombre;
+			datos[j][1] = Long.toString(puntaje);
+			i++;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			JOptionPane.showMessageDialog(null, "Ocurrio un error con el archivo de guardado, se creara uno nuevo solo con su puntaje actual.");
+			datos[j][0] = nombre;
+			datos[j][1] = Long.toString(puntaje);
+			i++;
+		} finally {
+			if (entrada != null)
+				entrada.close();
+		}
+		
+		PrintWriter pw = null;
+		try {
 			FileWriter fw = new FileWriter(new File(dir));
 			BufferedWriter bw = new BufferedWriter(fw);
-			PrintWriter pw = new PrintWriter(bw);
+			pw = new PrintWriter(bw);
 			
 			for (j = 0; j < i; j++) {
 				pw.println(datos[j][0] + "@" + datos[j][1]);
@@ -155,7 +161,10 @@ public class EntornoJuego extends PanelPadre {
 			pw.close();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Ocurrio un error al guardar el puntaje. " + e.getMessage());
-			e.printStackTrace();
+		} finally {
+			if (pw != null) {
+				pw.close();
+			}
 		}
 		
 		Juego.getInstance().actualizarFrame(Menu.getInstance());

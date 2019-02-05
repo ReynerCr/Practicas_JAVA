@@ -1,7 +1,8 @@
 package codigo;
 
 import java.awt.Image;
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.sound.sampled.AudioSystem;
@@ -45,15 +46,21 @@ public class Loader {
 		bells = new Clip[3];
 		try {
 			music = AudioSystem.getClip();
-			music.open(AudioSystem.getAudioInputStream(new File (this.getClass().getResource("/recursos/sonido/music0.wav").getFile())));
+			InputStream BufferedInput = new BufferedInputStream(this.getClass().getResourceAsStream("/recursos/sonido/music0.wav"));
+			music.open(AudioSystem.getAudioInputStream(BufferedInput));
 			music.loop(Clip.LOOP_CONTINUOUSLY);
-			//TODO aqui hay un problema al exportar con ejecutable jar
 			for (int i = 0; i < 3; i++) {
 				bells[i] = AudioSystem.getClip();
-				bells[i].open(AudioSystem.getAudioInputStream(new File(this.getClass().getResource("/recursos/sonido/bell" + i + ".wav").getFile())));
+				BufferedInput = new BufferedInputStream(this.getClass().getResourceAsStream("/recursos/sonido/bell" + i + ".wav"));
+				bells[i].open(AudioSystem.getAudioInputStream(BufferedInput));
 			}
 		} catch (Exception e1) {
+			music.close();
+			for (int i = 0; i < 3; i++) {
+				bells[i].close();
+			}
 			JOptionPane.showMessageDialog(null, "Ocurrio un problema al cargar alguno de los archivos de sonido. " + e1.getMessage());
+			System.exit(1);
 		}
 	}//Loader
 	

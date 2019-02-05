@@ -44,7 +44,7 @@ public class Tablero extends JPanel {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					System.exit(2);
 				}
 			}//for j
 		}//for i
@@ -187,7 +187,7 @@ public class Tablero extends JPanel {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				System.exit(2);
 			}
 			
 			return esferita;
