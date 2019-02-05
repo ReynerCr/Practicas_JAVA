@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 //TODO arreglar codigo para que se vea bonito y anyadirle javadoc
+//TODO Anyadir evento de salida al presionar la x y al darle a salir, que haga null todo para que el recolector de basura haga su trabajo
 @SuppressWarnings("serial")
 public class Tablero extends JPanel {
 	private Esfera esferas[][];
@@ -28,10 +29,9 @@ public class Tablero extends JPanel {
 		} while (!hayJugadasDisponibles()); 
 	}
 	
-	private void iniciarEsferas() {		int x, y;
-		
+	private void iniciarEsferas() {		
+		int x, y;
 		esferas = new Esfera[MAX_FILAS][MAX_COLUMNAS];
-		
 		for (int i = 0; i < MAX_FILAS; i++) {
 			y = (distY * i) + 15;
 			for (int j = 0; j < MAX_COLUMNAS; j++) {
@@ -68,6 +68,8 @@ public class Tablero extends JPanel {
 						if (esfNum == -1) {
 							esfLista = null;
 						}
+						
+						Loader.getInstance().startBell(0);
 					}//if mi esfera actual es la misma que la anterior de la lista
 					else if (!(esferas[i][j].getActivo())) {
 						if  (esferas[i][j].getValor() == sumatoriaValores || (esfNum > 0 && esfLista[esfNum].getValor() == esferas[i][j].getValor())) {
@@ -77,6 +79,7 @@ public class Tablero extends JPanel {
 								esfNum++;
 								esferas[i][j].setActivo(true);
 								esfLista[esfNum] = esferas[i][j];
+								Loader.getInstance().startBell(1);
 							}//if direccion != 0
 						}//if
 					}//else if 
@@ -97,8 +100,8 @@ public class Tablero extends JPanel {
 					esferas[i][j].setActivo(true);
 					esfLista[esfNum] = esferas[i][j];
 					sumatoriaValores = esferas[i][j].getValor();
+					Loader.getInstance().startBell(1);
 				}
-				//TODO aqui sonido de inicio
 			}//mousePressed
 			
 			@Override
@@ -127,6 +130,8 @@ public class Tablero extends JPanel {
 								}
 							}//for j
 						}//for i
+						
+						Loader.getInstance().startBell(2);
 
 						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
 						if (!hayJugadasDisponibles()) {
@@ -137,12 +142,13 @@ public class Tablero extends JPanel {
 							mayorValor = esfLista[esfNum].getValor();
 						}
 						
-						//TODO anyadir sonido de fin de cadena
 						pausa = false;
 					}//esfNum > 0
 					
-					else
+					else {
+						Loader.getInstance().startBell(0);
 						esfLista[esfNum].setActivo(false);
+					}
 				}//if !pausa
 				
 				esfNum = -1;

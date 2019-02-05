@@ -75,15 +75,15 @@ public class EntornoJuego extends PanelPadre {
 				if (time.getActivo()) {
 					time.pararTiempo();
 					tablero.setPausa(true);
-					pausar.setIcon(ImageLoader.getInstance().getOtros(5));
-					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(3));
+					pausar.setIcon(Loader.getInstance().getOtros(5));
+					pausar.setRolloverIcon(Loader.getInstance().getOtros(3));
 				}
 				
 				else {
 					time.iniciarTiempo();
 					tablero.setPausa(false);
-					pausar.setIcon(ImageLoader.getInstance().getOtros(4));
-					pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
+					pausar.setIcon(Loader.getInstance().getOtros(4));
+					pausar.setRolloverIcon(Loader.getInstance().getOtros(2));
 				}
 			}
 		});
@@ -166,9 +166,9 @@ public class EntornoJuego extends PanelPadre {
 		JPanel parteInferior = new JPanel(new FlowLayout());
 		parteInferior.setOpaque(false);
 		
-		volver = new JButton(ImageLoader.getInstance().getOtros(6));
+		volver = new JButton(Loader.getInstance().getOtros(6));
 		volver.setSize(volver.getIcon().getIconWidth(), volver.getIcon().getIconHeight());
-		volver.setRolloverIcon(ImageLoader.getInstance().getOtros(8));
+		volver.setRolloverIcon(Loader.getInstance().getOtros(8));
 		volver.setContentAreaFilled(false);
 		volver.setBorderPainted(false);
 		volver.addActionListener(new ActionListener() {
@@ -203,8 +203,8 @@ public class EntornoJuego extends PanelPadre {
 		});
 		parteInferior.add(volver);
 		
-		reiniciar = new JButton(ImageLoader.getInstance().getOtros(7));
-		reiniciar.setRolloverIcon(ImageLoader.getInstance().getOtros(9));
+		reiniciar = new JButton(Loader.getInstance().getOtros(7));
+		reiniciar.setRolloverIcon(Loader.getInstance().getOtros(9));
 		reiniciar.setSize(reiniciar.getIcon().getIconWidth(), reiniciar.getIcon().getIconHeight());
 		reiniciar.setContentAreaFilled(false);
 		reiniciar.setBorderPainted(false);
@@ -228,8 +228,8 @@ public class EntornoJuego extends PanelPadre {
 		puntaje = 0;
 		ePuntaje.setText(Long.toString(puntaje));
 		
-		pausar.setIcon(ImageLoader.getInstance().getOtros(4));
-		pausar.setRolloverIcon(ImageLoader.getInstance().getOtros(2));
+		pausar.setIcon(Loader.getInstance().getOtros(4));
+		pausar.setRolloverIcon(Loader.getInstance().getOtros(2));
 		
 		if (tablero != null) {
 			remove(tablero);

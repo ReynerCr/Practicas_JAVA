@@ -12,7 +12,7 @@ public class PanelPadre extends JPanel {
 	
 	@Override
 	public void paint(Graphics g){
-        g.drawImage(ImageLoader.getInstance().getFondo(), 0, 0, getWidth(), getHeight(), this);
+        g.drawImage(Loader.getInstance().getFondo(), 0, 0, getWidth(), getHeight(), this);
         super.setOpaque(false);
         super.paint(g);
     }

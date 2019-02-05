@@ -11,7 +11,7 @@ import javax.swing.SwingConstants;
 public class EtiquetaPersonalizada extends JLabel {
 	
 	public EtiquetaPersonalizada(String texto) {
-		ImageIcon imagen = ImageLoader.getInstance().getEtiqueta();
+		ImageIcon imagen = Loader.getInstance().getEtiqueta();
 		this.setIcon(imagen);
 		
 		this.setText(texto);
@@ -23,7 +23,7 @@ public class EtiquetaPersonalizada extends JLabel {
 		this(texto);
 		
 		this.setFont(new Font("Arial", Font.BOLD, tamanyo));
-		this.setIcon(new ImageIcon(ImageLoader.getInstance().getEtiqueta().getImage().getScaledInstance(ancho, alto, Image.SCALE_FAST)));
+		this.setIcon(new ImageIcon(Loader.getInstance().getEtiqueta().getImage().getScaledInstance(ancho, alto, Image.SCALE_FAST)));
 		this.setSize(ancho, alto);
 	}
 	

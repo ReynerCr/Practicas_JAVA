@@ -2,7 +2,6 @@ package codigo;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
@@ -20,7 +19,7 @@ public class Esfera extends JLabel {
 		this.setSize(60, 60);
 		activo = false;
 		caida = new Timer(10, new TimerCaida());
-		difuminado = new JLabel(ImageLoader.getInstance().getEsfera(0));
+		difuminado = new JLabel(Loader.getInstance().getEsfera(0));
 		difuminado.setSize(70, 70);
 	}//
 	
@@ -30,7 +29,7 @@ public class Esfera extends JLabel {
 		this.setSize(60, 60);
 		this.activo = false;
 		this.setLocation(esfera.getLocation());
-		difuminado = new JLabel(ImageLoader.getInstance().getEsfera(0));
+		difuminado = new JLabel(Loader.getInstance().getEsfera(0));
 	}//
 
 	public void setValor(int valor) {
@@ -46,12 +45,12 @@ public class Esfera extends JLabel {
 		this.valor = valor;
 		
 		i = 1;
-		while (i < ImageLoader.MAX_ESFERAS && Math.pow(2, i-1) != this.valor) {
+		while (i < Loader.MAX_ESFERAS && Math.pow(2, i-1) != this.valor) {
 			i++;
 		}
 		i--;
 		
-		this.setIcon(ImageLoader.getInstance().getEsfera(i));
+		this.setIcon(Loader.getInstance().getEsfera(i));
 	}
 	
 	public int getValor() {

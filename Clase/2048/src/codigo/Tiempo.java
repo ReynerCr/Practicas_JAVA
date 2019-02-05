@@ -23,7 +23,7 @@ public class Tiempo extends JLabel {
 		this.setText("00:00");
 		this.setFont(new Font("Arial", Font.BOLD, 25));
 		this.setHorizontalTextPosition(SwingConstants.CENTER);
-		this.setIcon(ImageLoader.getInstance().getOtros(1));
+		this.setIcon(Loader.getInstance().getOtros(1));
 		
 		timer.start();
 	}
