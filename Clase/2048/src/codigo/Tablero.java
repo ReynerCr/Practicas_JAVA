@@ -29,14 +29,14 @@ public class Tablero extends JPanel {
 		} while (!hayJugadasDisponibles()); 
 	}
 	
-	private void iniciarEsferas() {		
+	private void iniciarEsferas() {
 		int x, y;
 		esferas = new Esfera[MAX_FILAS][MAX_COLUMNAS];
 		for (int i = 0; i < MAX_FILAS; i++) {
 			y = (distY * i) + 15;
 			for (int j = 0; j < MAX_COLUMNAS; j++) {
 				x = (distX * j) + 105;
-				int aux = (int) ((Math.random() * 8) + 1);
+				int aux = (int) ((Math.random() * 8) + 1); //TODO
 				esferas[i][j] = new Esfera(aux);
 				esferas[i][j].setLocation(x, y);
 				esferas[i][j].addMouseListener(eventoEsferas(i, j));
@@ -108,7 +108,6 @@ public class Tablero extends JPanel {
 			public void mouseReleased(MouseEvent e) {
 				if (!pausa) {
 					if (esfNum > 0) {
-						pausa = true;
 						esfLista[esfNum].setValor(sumatoriaValores);
 						esfLista[esfNum].setActivo(false);
 						
@@ -134,6 +133,13 @@ public class Tablero extends JPanel {
 						Loader.getInstance().startBell(2);
 
 						EntornoJuego.getInstance().actualizarPuntaje(sumatoriaValores);
+						
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+						
 						if (!hayJugadasDisponibles()) {
 							EntornoJuego.getInstance().finDeJuego();
 						}
@@ -141,8 +147,6 @@ public class Tablero extends JPanel {
 						if (esfLista[esfNum].getValor() > mayorValor) {
 							mayorValor = esfLista[esfNum].getValor();
 						}
-						
-						pausa = false;
 					}//esfNum > 0
 					
 					else {

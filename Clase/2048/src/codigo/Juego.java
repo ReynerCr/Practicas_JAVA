@@ -3,6 +3,7 @@ package codigo;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Juego extends JFrame {
@@ -33,6 +34,12 @@ public class Juego extends JFrame {
 	}
 	
 	public void actualizarFrame(PanelPadre panel) {
+		Juego.getInstance().setContentPane(panel);
+		Juego.getInstance().revalidate();
+		Juego.getInstance().repaint();
+	}
+	
+	public void actualizarFrame(JPanel panel) {
 		Juego.getInstance().setContentPane(panel);
 		Juego.getInstance().revalidate();
 		Juego.getInstance().repaint();

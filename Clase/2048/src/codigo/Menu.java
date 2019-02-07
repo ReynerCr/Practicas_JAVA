@@ -20,8 +20,7 @@ public class Menu extends PanelPadre {
 	private BotonMenu top10;
 	private BotonMenu creditos;
 	private BotonMenu salir;
-	private BotonMenu volver;
-	private ActionListener volverMenu;
+	private BotonMenu bVolver;
 	
 	private Menu() {
 		iniciarComponentes();
@@ -48,16 +47,21 @@ public class Menu extends PanelPadre {
 	}
 	
 	private void eVolverMenu() {
-		volverMenu =  new ActionListener() {
+		ActionListener volverMenu =  new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Juego.getInstance().actualizarFrame(Menu.getInstance());
 			}
 		};
 		
-		volver = new BotonMenu("Volver");
-		volver.addActionListener(volverMenu);
-		volver.setSize(150, 80);
+		bVolver = new BotonMenu("Volver");
+		bVolver.addActionListener(volverMenu);
+		bVolver.setSize(150, 80);
+		bVolver.setLocation(30, this.getHeight() - 150);
+	}
+	
+	public BotonMenu getBVolver() {
+		return bVolver;
 	}
 	
 	private void bNuevoJuego() { 
@@ -103,13 +107,11 @@ public class Menu extends PanelPadre {
 				cajaT.addActionListener(al2);
 				nombre.addActionListener(al2);
 				
-				
 				panel.add(cajaT);
-				volver.setLocation(30, panel.getHeight() - 150);
-				panel.add(volver);
+				panel.add(bVolver);
 				
-				Juego.getInstance().setContentPane(panel);
 				Juego.getInstance().actualizarFrame(panel);
+				panel = null;
 			}
 		};
 		
@@ -120,16 +122,13 @@ public class Menu extends PanelPadre {
 		this.add(nuevoJ);
 	}
 	
-	private void bInstrucciones() { //TODO Basicamente hacer todo lo de adentro
+	private void bInstrucciones() {
 		ActionListener al = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PanelPadre panel = new PanelPadre();
-				
-				volver.setLocation(30, panel.getHeight() - 150);
-				panel.add(volver);
-				
-				Juego.getInstance().actualizarFrame(panel);
+				Instrucciones inst = new Instrucciones();
+				Juego.getInstance().actualizarFrame(inst.getPagina(0));
+				inst = null; //TODO esto me borrara instancia? comprobar (optimizacion)
 			}
 		};
 		
@@ -194,10 +193,10 @@ public class Menu extends PanelPadre {
 					new File(dir).delete();
 				}
 				
-				volver.setLocation(30, panel.getHeight() - 150);
-				panel.add(volver);
+				panel.add(bVolver);
 				
 				Juego.getInstance().actualizarFrame(panel);
+				panel = null;
 			}//ActionPerformed
 		};//ActionListener al
 		
@@ -219,14 +218,14 @@ public class Menu extends PanelPadre {
 				etiqueta.setLocation(30, 300);
 				panel.add(etiqueta);
 						
-				etiqueta = new EtiquetaPersonalizada("Version: 1.00");
+				etiqueta = new EtiquetaPersonalizada("Version: 2.00");
 				etiqueta.setFont(new Font("Arial", Font.BOLD, 25));
 				etiqueta.setLocation((panel.getWidth()/2)/2, 500);
 				panel.add(etiqueta);
-				volver.setLocation(30, panel.getHeight() - 150);
-				panel.add(volver);
+				panel.add(bVolver);
 				
 				Juego.getInstance().actualizarFrame(panel);
+				panel = null;
 			}//actionPerformed
 		};//ActionListener al
 		
