@@ -16,6 +16,9 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/** Clase que hace de panel para lo que tiene que ver con el juego en si. En ella se anyade el temporizador 
+ * puntaje, y los botones de pausa, volver al menu y reiniciar. Aparte de eso, se anyade el subpanel tablero
+ * que es donde se hacen los movimientos con las esferas. */
 @SuppressWarnings("serial")
 public class EntornoJuego extends PanelPadre {
 	private static EntornoJuego instance = null;
@@ -26,37 +29,42 @@ public class EntornoJuego extends PanelPadre {
 	private JButton pausar;
 	private JButton reiniciar;
 	private Tiempo time;
-	
 	private JButton volver;
 	Tablero tablero;
 	
+	/** Constructor por defecto y unico de EntornoJuego(). Es llamado desde getInstance()*/
 	private EntornoJuego() {
 		this.setLayout(new BorderLayout());
 		iniciarComponentes();
-	}
+	}//EntornoJuego()
 	
+	/** Metodo para inicializar los componentes del panel. */
 	private void iniciarComponentes() {
 		time = new Tiempo();
 		inciarParteSuperior();
 		iniciarParteInferior();
 		reiniciar();
-	}
+	}//iniciarComponentes()
 	
+	/** Metodo que es llamado desde Menu, y que guarda el nombre que el usuario ingreso. */
 	void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
+	}//setNombre()
 	
+	/** Metodo que devuelve instance si ya se instancio, y si no, lo hace. */
 	public static EntornoJuego getInstance() {
 		if (instance == null)
 			instance = new EntornoJuego();
 		
 		return instance;
-	}
-	
+	}//getInstance()
+
+	/** Devuelve el nombre. Util para saber cuando se ha instanciado para reiniciarlo. */
 	public String getNombre() {
 		return nombre;
-	}
+	}//getNombre()
 	
+	/** Inicia los componentes de la parte superior del panel. */
 	private void inciarParteSuperior() {
 		JPanel parteSuperior = new JPanel(new FlowLayout());
 		parteSuperior.setOpaque(false);
@@ -78,30 +86,39 @@ public class EntornoJuego extends PanelPadre {
 					pausar.setIcon(Loader.getInstance().getOtros(5));
 					pausar.setRolloverIcon(Loader.getInstance().getOtros(3));
 				}
-				
 				else {
 					time.iniciarTiempo();
 					tablero.setPausa(false);
 					pausar.setIcon(Loader.getInstance().getOtros(4));
 					pausar.setRolloverIcon(Loader.getInstance().getOtros(2));
 				}
-			}
-		});
+			}//actionPerformed()
+		});//pausar.addActionListener()
 		parteSuperior.add(pausar);
 		
 		this.add(parteSuperior, BorderLayout.PAGE_START);
-	}
+	}//iniciarParteSuperior()
 	
+	/** Metodo que instancia el objeto de tablero y lo anyade al panel. Tambien sirve para reiniciarlo. */
 	private void iniciarTablero() {
+		if (tablero != null) {
+			remove(tablero);
+			tablero = null;
+		}
+		
 		tablero = new Tablero();
 		this.add(tablero, BorderLayout.CENTER);
-	}
+	}//iniciarTablero()
 	
+	/** Metodo para actualizar el puntaje. Es llamado desde Tablero. */
 	void actualizarPuntaje(long puntaje) {
 		this.puntaje += puntaje;
 		ePuntaje.setText(Long.toString(this.puntaje));
-	}
+	}//actualizarPuntaje()
 	
+	/** Metodo para finalizar el juego, muestra un mensaje con el nombre, puntaje y tiempo total; ademas, si 
+	 * aplica para entrar a top10, entonces guarda nombre y puntaje en el archivo correspondiente. Al final 
+	 * devuelve al usuario al menu. Es llamado desde Tablero.*/
 	void finDeJuego() {
 		time.pararTiempo();
 		tablero.setPausa(true);
@@ -146,7 +163,7 @@ public class EntornoJuego extends PanelPadre {
 		} finally {
 			if (entrada != null)
 				entrada.close();
-		}
+		}//finally para cerrar archivo
 		
 		PrintWriter pw = null;
 		try {
@@ -165,12 +182,13 @@ public class EntornoJuego extends PanelPadre {
 			if (pw != null) {
 				pw.close();
 			}
-		}
+		}//finally para cerrar archivos
 		
 		Juego.getInstance().actualizarFrame(Menu.getInstance());
 		puntaje = 0;
-	}
+	}//finDeJuego()
 	
+	/** Metodo para anyadir los componentes de la parte inferior del panel. */
 	private void iniciarParteInferior() {
 		JPanel parteInferior = new JPanel(new FlowLayout());
 		parteInferior.setOpaque(false);
@@ -192,7 +210,7 @@ public class EntornoJuego extends PanelPadre {
 					
 					if (!(tablero.getPausa()))
 						time.iniciarTiempo();
-				}
+				}//if
 				if (pregunta == 0) {
 					if (puntaje != 0)
 						finDeJuego();
@@ -206,10 +224,10 @@ public class EntornoJuego extends PanelPadre {
 						ePuntaje.setText(Long.toString(puntaje));
 						
 						Juego.getInstance().actualizarFrame(Menu.getInstance());
-					}
+					}//else
 				}//if se acepto la advertencia
-			}//actionPerformed
-		});
+			}//actionPerformed()
+		});//volver.addActionListener()
 		parteInferior.add(volver);
 		
 		reiniciar = new JButton(Loader.getInstance().getOtros(7));
@@ -220,19 +238,28 @@ public class EntornoJuego extends PanelPadre {
 		reiniciar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				reiniciar();
-				revalidate();
-				repaint();
-			}
-		});
+				int pregunta = 0;
+				if (puntaje != 0) {
+					time.pararTiempo();
+					
+					pregunta = JOptionPane.showConfirmDialog(null, "Esta seguro de que desea reiniciar el tablero?",
+							"Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+					if (!(tablero.getPausa()))
+						time.iniciarTiempo();
+				}//if
+				if (pregunta == 0) {
+					reiniciar();
+					revalidate();
+					repaint();
+				}//else
+			}//actionPerformed()
+		});//reiniciar.addActionListener()
 		parteInferior.add(reiniciar);
 		this.add(parteInferior, BorderLayout.PAGE_END);
-	}
+	}//iniciarParteInferior()
 	
-	Tiempo getTime() {
-		return time;
-	}
-	
+	/** metodo que reinicia puntaje, tiempo y el tablero. */
 	void reiniciar() {
 		puntaje = 0;
 		ePuntaje.setText(Long.toString(puntaje));
@@ -240,14 +267,9 @@ public class EntornoJuego extends PanelPadre {
 		pausar.setIcon(Loader.getInstance().getOtros(4));
 		pausar.setRolloverIcon(Loader.getInstance().getOtros(2));
 		
-		if (tablero != null) {
-			remove(tablero);
-			tablero = null;
-		}
-			
 		iniciarTablero();
 		
 		time.reiniciar();
 		time.setText(time.getTiempo());
-	}
-}
+	}//reiniciar()
+}//class EntornoJuego()

@@ -7,8 +7,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
+/** Clase que extiende de JButton y sirve para la creacion de los botones del menu. */
 @SuppressWarnings("serial")
 public class BotonMenu extends JButton {
+	
+	/** Constructor por defecto de BotonMenu y que siempre es llamado. */
 	private BotonMenu() {
 		this.setBorderPainted(false);
 		this.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -20,13 +23,16 @@ public class BotonMenu extends JButton {
 		
 		 icono = Loader.getInstance().getBotones(1); //mouse por encima
 		 this.setRolloverIcon(icono);
-	}
+	}//BotonMenu()
 	
+	/** Constructor parametrico: recibe un String que es el texto del boton. */
 	public BotonMenu(String texto) {
 		this();
 		this.setText(texto);
-	}
+	}//BotonMenu(String)
 	
+	/** Constructor parametrico: recibe un String (texto de boton), y tres enteros que son ancho, alto y el
+	 *  tamanyo de la letra. */
 	public BotonMenu(String texto, int ancho, int alto, int tamanyoLetra) {
 		this(texto);
 		
@@ -38,5 +44,5 @@ public class BotonMenu extends JButton {
 		this.setFont(new Font("Arial", Font.BOLD, tamanyoLetra));
 		
 		this.setSize(ancho, alto);
-	}
-}
+	}//BotonMenu(String, int, int, int)
+}//class BotonMenu

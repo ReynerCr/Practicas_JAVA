@@ -10,6 +10,8 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+/** Clase donde se instancia el menu y las distintas secciones del programa, que no tienen que ver 
+ * directamente con el funcionamiento del juego. Funciona como panel para Juego.*/
 @SuppressWarnings("serial")
 public class Menu extends PanelPadre {
 	
@@ -22,21 +24,20 @@ public class Menu extends PanelPadre {
 	private BotonMenu salir;
 	private BotonMenu bVolver;
 	
+	/** Constructor por defecto y unico de Menu. Es llamado desde getInstance() si todavía no se ha creado. */
 	private Menu() {
-		iniciarComponentes();
-	}
-	
-	private void iniciarComponentes() {
 		iniciarBotones();
-	}
+	}//Menu()
 	
+	/** Metodo estatico que devuelve instance si ya se instancio, en caso contrario lo instancia. */
 	public static Menu getInstance() {
 		if (instance == null)
 			instance = new Menu();
 		
 		return instance;
-	}
+	}//getInstance()
 	
+	/** Metodo que llama a los metodos para inicializar botones. */
 	private void iniciarBotones() {
 		eVolverMenu();
 		bNuevoJuego();
@@ -44,26 +45,25 @@ public class Menu extends PanelPadre {
 		bTop10();
 		bCreditos();
 		bSalir();
-	}
+	}//iniciarBotones()
 	
+	/** Metodo para inicializar el boton de volver al menu, que se utiliza en otros submenus. */
 	private void eVolverMenu() {
 		ActionListener volverMenu =  new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Juego.getInstance().actualizarFrame(Menu.getInstance());
-			}
-		};
+			}//actionPerformed()
+		};//ActionListener volverMenu
 		
 		bVolver = new BotonMenu("Volver");
 		bVolver.addActionListener(volverMenu);
 		bVolver.setSize(150, 80);
 		bVolver.setLocation(30, this.getHeight() - 150);
-	}
+	}//eVolverMenu()
 	
-	public BotonMenu getBVolver() {
-		return bVolver;
-	}
-	
+	/** Metodo para inicializar el boton de nuevo juego y que crea el submenu donde se pregunta al usuario
+	 *  el nombre y luego se le redirige al juego en si. */
 	private void bNuevoJuego() { 
 		ActionListener al = new ActionListener() {
 			@Override
@@ -100,9 +100,9 @@ public class Menu extends PanelPadre {
 							}
 							EntornoJuego.getInstance().setNombre(cajaT.getText());
 							Juego.getInstance().actualizarFrame(EntornoJuego.getInstance());
-						}
-					}
-				};
+						}//else para ir al juego
+					}//actionPerformed()
+				};//ActionListener al2
 				
 				cajaT.addActionListener(al2);
 				nombre.addActionListener(al2);
@@ -112,33 +112,34 @@ public class Menu extends PanelPadre {
 				
 				Juego.getInstance().actualizarFrame(panel);
 				panel = null;
-			}
-		};
+			}//actionPerfomed()
+		};//ActionListener al
 		
 		nuevoJ = new BotonMenu("Nuevo juego");
 		nuevoJ.addActionListener(al);
 		nuevoJ.setBounds((this.getWidth()/2)/2, 200, 300, 50);
 		
 		this.add(nuevoJ);
-	}
+	}//bNuevoJuego()
 	
+	/** Metodo para inicializar el boton para ir a instrucciones y que al pulsarlo crea una instancia de Instrucciones. */
 	private void bInstrucciones() {
 		ActionListener al = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Instrucciones inst = new Instrucciones();
-				Juego.getInstance().actualizarFrame(inst.getPagina(0));
-				inst = null; //TODO esto me borrara instancia? comprobar (optimizacion)
-			}
-		};
+				Juego.getInstance().actualizarFrame(Instrucciones.getInstance().getPagina(0));
+			}//actionPerformed()
+		};//ActionListener al
 		
 		instrucciones = new BotonMenu("Instrucciones");
 		instrucciones.addActionListener(al);
 		instrucciones.setBounds((this.getWidth()/2)/2, nuevoJ.getY() + 80, 300, 50);
 		
 		this.add(instrucciones);
-	}
+	}//bInstrucciones()
 	
+	/** Metodo para inicializar el boton para ir al top10, donde se muestra la lista de jugadores que entraron al top10
+	 *  al jugar. */
 	private void bTop10() {
 		ActionListener al = new ActionListener() {
 			@SuppressWarnings("resource")
@@ -191,7 +192,7 @@ public class Menu extends PanelPadre {
 					
 					JOptionPane.showMessageDialog(null, "El archivo esta corrupto, se creara de nuevo al jugar.");
 					new File(dir).delete();
-				}
+				}//fin de catchs
 				
 				panel.add(bVolver);
 				
@@ -205,25 +206,29 @@ public class Menu extends PanelPadre {
 		top10.setBounds((this.getWidth()/2)/2, instrucciones.getY() + 80, 300, 50);
 		
 		this.add(top10);
-	}
+	}//bTop10()
 	
-	private void bCreditos() { //TODO mejorar o cambiar todo
+	/** Metodo para inicializar el boton para ir a los creditos, donde se muestra al autor y la version del juego. */
+	private void bCreditos() {
 		ActionListener al = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				PanelPadre panel = new PanelPadre();
 				EtiquetaPersonalizada etiqueta;
 				
-				etiqueta = new EtiquetaPersonalizada("Reyner Contreras;  C.I: V.-26934400;  seccion 01.", 540, 50, 18);
+				etiqueta =  new EtiquetaPersonalizada("Creditos", 200, 50, 18);
+				etiqueta.setLocation((panel.getWidth()/3), 40);
+				panel.add(etiqueta);
+				
+				etiqueta = new EtiquetaPersonalizada("Autor: Reyner Contreras.", 540, 50, 18);
 				etiqueta.setLocation(30, 300);
 				panel.add(etiqueta);
 						
-				etiqueta = new EtiquetaPersonalizada("Version: 2.00");
-				etiqueta.setFont(new Font("Arial", Font.BOLD, 25));
-				etiqueta.setLocation((panel.getWidth()/2)/2, 500);
+				etiqueta = new EtiquetaPersonalizada("Version: 2.00", 200, 50, 15);
+				etiqueta.setLocation((panel.getWidth()/3), 550);
 				panel.add(etiqueta);
-				panel.add(bVolver);
 				
+				panel.add(bVolver);
 				Juego.getInstance().actualizarFrame(panel);
 				panel = null;
 			}//actionPerformed
@@ -234,20 +239,21 @@ public class Menu extends PanelPadre {
 		creditos.setBounds((this.getWidth()/2)/2, top10.getY() + 80, 300, 50);
 		
 		this.add(creditos);
-	}
+	}//bCreditos()
 
+	/** Metodo para inicializar el boton de salir del juego, y que hace exactamente eso. */
 	private void bSalir() {
 		ActionListener al = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
-			}
-		};
+			}//actionPerformed()
+		};//ActionListener al
 		
 		salir = new BotonMenu("Salir");
 		salir.addActionListener(al);
 		salir.setBounds((this.getWidth()/2)/2, creditos.getY() + 80, 300, 50);
 		
 		this.add(salir);
-	}
-}
+	}//bSalir()
+}//class Menu

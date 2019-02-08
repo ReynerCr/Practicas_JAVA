@@ -8,7 +8,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+/** Clase donde se crean las paginas de las instrucciones que se mostraran al usuario. */
 public class Instrucciones {
+	private static Instrucciones instance = null;
+	
 	private JPanel paginas[];
 	private int pag;
 	
@@ -16,7 +19,9 @@ public class Instrucciones {
 	BotonMenu bVolver;
 	BotonMenu siguiente;
 	
-	public Instrucciones() {
+	/** Constructor por defecto y unico de Instrucciones. Es llamado desde getInstance si no se ha
+	 *  creado la instancia.*/
+	private Instrucciones() {
 		paginas = new JPanel[3];
 		pag = 0;
 		
@@ -24,6 +29,15 @@ public class Instrucciones {
 		crearPaginas();
 	}//Instrucciones(pagina)
 	
+	/** Devuelve la instancia si se ha creado, y si no, lo hace. */
+	public static Instrucciones getInstance() {
+		if (instance == null)
+			instance = new Instrucciones();
+			
+		return instance;
+	}//getInstance()
+	
+	/** Metodo para inicializar las etiquetas o botones que se repiten en las tres paginas. */
 	private void inicializarComunes() {
 		//instrucciones
 		instrucc = new EtiquetaPersonalizada("Instrucciones", 200, 50, 18);
@@ -47,7 +61,7 @@ public class Instrucciones {
 					Juego.getInstance().actualizarFrame(Menu.getInstance());
 				}
 			}//actionPerformed
-		};
+		};//ActionListener volver
 		
 		bVolver = new BotonMenu("Volver");
 		bVolver.setSize(150, 80);
@@ -64,26 +78,28 @@ public class Instrucciones {
 				
 				Juego.getInstance().actualizarFrame(getPagina(++pag));
 			}//actionPerformed
-		};
+		}; //ActionListener siguientePagina
 
 		siguiente = new BotonMenu("Siguiente");
 		siguiente.addActionListener(siguientePagina);
 		siguiente.setSize(150, 80);
 		siguiente.setLocation(415, Menu.getInstance().getHeight() - 121);
-	}
+	}//InicializarComunes()
 	
+	/** Metodo parar instanciar las paginas y llamar a los metodos que anyaden el contenido a dichas paginas. */
 	private void crearPaginas() {
 		for (int i = 0; i < 3; i++) {
 			paginas[i] = new JPanel(null);
 			paginas[i].setSize(600, 800);
 			paginas[i].setBackground(Color.black);
-		}
+		}//for i
 		
 		crearPagina0();
 		crearPagina1();
 		crearPagina2();
 	}//crearPaginas()
 	
+	/** Metodo para anyadir contenido a la pagina0. */
 	private void crearPagina0() {
 		AreaTextoPersonalizada texto;
 		JLabel gif;
@@ -121,8 +137,9 @@ public class Instrucciones {
 				+ "clic.", 335, 18, 12);
 		texto.setLocation(130, 540);
 		paginas[0].add(texto);
-	}
+	}//crearPagina0()
 	
+	/** Metodo para anyadir contenido a la pagina1. */
 	private void crearPagina1() {
 		AreaTextoPersonalizada texto;
 		JLabel gif;
@@ -155,29 +172,31 @@ public class Instrucciones {
 		//gif 4
 		gif = new JLabel(new ImageIcon(this.getClass().getResource("/recursos/imagenes/gifs/4.gif")));
 		gif.setSize(gif.getIcon().getIconWidth(), gif.getIcon().getIconHeight());
-		gif.setLocation(125, 410);
+		gif.setLocation(160, 410);
 		paginas[1].add(gif);
 
 		texto = new AreaTextoPersonalizada("  Se puede seleccionar esferas adyacentes en cualquier direccion.", 382, 18, 12);
 		texto.setLocation(110, 586);
 		paginas[1].add(texto);
-	}
+	}//crearPagina1()
 	
+	/** Metodo para anyadir contenido a la pagina2. */
 	private void crearPagina2() {
 		AreaTextoPersonalizada texto;
 		JLabel gif;
 
 		//gif 5
 		gif = new JLabel(new ImageIcon(this.getClass().getResource("/recursos/imagenes/gifs/5.gif")));
-		gif.setSize(gif.getIcon().getIconWidth(), gif.getIcon().getIconHeight());
+		gif.setSize(400, 526);
 		gif.setLocation(100, 95);
 		paginas[2].add(gif);
 
 		texto = new AreaTextoPersonalizada("  Diviertete!", 90, 20, 15);
 		texto.setLocation(250, 620);
 		paginas[2].add(texto);
-	}
+	}//crearPagina2()
 	
+	/** Metodo para obtener la pagina i. */
 	public JPanel getPagina(int i) {
 		instrucc.setText("Instrucciones " + (pag + 1) + "/3");
 		paginas[i].add(instrucc);
@@ -188,5 +207,4 @@ public class Instrucciones {
 		
 		return paginas[i];
 	}//getPagina(int)
-	
 }//class Instrucciones
