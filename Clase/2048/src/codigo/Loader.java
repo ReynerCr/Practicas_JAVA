@@ -5,8 +5,11 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -46,21 +49,29 @@ public class Loader {
 		setFondo(0);
 		
 		bells = new Clip[3];
-		try {
-			music = AudioSystem.getClip();
-			InputStream BufferedInput = new BufferedInputStream(this.getClass().getResourceAsStream("/recursos/sonido/music0.wav"));
-			music.open(AudioSystem.getAudioInputStream(BufferedInput));
+	    try {
+	    	InputStream audioSrc = this.getClass().getResourceAsStream("/recursos/sonido/music0.wav");
+	    	audioSrc = new BufferedInputStream(audioSrc);
+	    	AudioInputStream soundIn = AudioSystem.getAudioInputStream(audioSrc);
+	        AudioFormat format = soundIn.getFormat();
+	        DataLine.Info info = new DataLine.Info(Clip.class, format);
+			music = (Clip)AudioSystem.getLine(info);
+			music.open(soundIn);
 			music.loop(Clip.LOOP_CONTINUOUSLY);
 			for (int i = 0; i < 3; i++) {
-				bells[i] = AudioSystem.getClip();
-				BufferedInput = new BufferedInputStream(this.getClass().getResourceAsStream("/recursos/sonido/bell" + i + ".wav"));
-				bells[i].open(AudioSystem.getAudioInputStream(BufferedInput));
-			}
+				audioSrc = this.getClass().getResourceAsStream("/recursos/sonido/bell" + i + ".wav");
+		    	audioSrc = new BufferedInputStream(audioSrc);
+				soundIn = AudioSystem.getAudioInputStream(audioSrc);
+				bells[i] = (Clip)AudioSystem.getLine(info);
+				bells[i].open(soundIn);
+			}//for
 		} catch (Exception e1) {
-			music.close();
+			if (music != null && music.isOpen())
+				music.close();
 			for (int i = 0; i < 3; i++) {
-				bells[i].close();
-			}
+				if (bells[i] != null && bells[i].isOpen())
+					bells[i].close();
+			}//for
 			JOptionPane.showMessageDialog(null, "Ocurrio un problema al cargar alguno de los archivos de sonido. " + e1.getMessage());
 			System.exit(1);
 		}//catch
